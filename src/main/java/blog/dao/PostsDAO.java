@@ -1,5 +1,6 @@
 package blog.dao;
 
+import blog.logic.Post;
 import com.mongodb.*;
 
 import java.util.ArrayList;
@@ -13,11 +14,12 @@ public class PostsDAO {
         postCollection = blogDB.getCollection("posts");
     }
 
-    public void insertPost(String title, String articleBody, String[] tags){
-        String permalink = createPermalink(title);
+    public void insertPost(Post post){
+        String permalink = createPermalink(post.getTitle());
+        String [] tags = post.getTagsString().split(",");
         DBObject queryToInsertPost = new BasicDBObject("dateTime", new Date())
-                .append("title", title)
-                .append("articleBody", articleBody)
+                .append("title", post.getTitle())
+                .append("articleBody", post.getArticleBody())
                 .append("tags", tags)
                 .append("permalink", permalink);
 

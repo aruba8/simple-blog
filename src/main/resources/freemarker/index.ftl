@@ -3,6 +3,8 @@
 <head>
     <title>Main page</title>
     <link rel="stylesheet" href="style.css">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
 </head>
 <body>
 <h1><a href="/">BLOG</a></h1>

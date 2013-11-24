@@ -1,10 +1,12 @@
 package blog.routes;
 
 import blog.dao.PostsDAO;
+import blog.logic.Post;
 import com.mongodb.DB;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
+import org.apache.commons.lang3.StringEscapeUtils;
 import spark.Request;
 import spark.Response;
 
@@ -39,8 +41,21 @@ public class AddPostRoute {
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 String articleBody = request.queryParams("articleBody");
 
+                String article = StringEscapeUtils.escapeHtml4(articleBody);
+                String title = StringEscapeUtils.escapeHtml4(request.queryParams("title"));
+                String tags = StringEscapeUtils.escapeHtml4(request.queryParams("tags"));
 
-                System.out.println(request.queryMap());
+                Post post = new Post();
+
+                post.setArticleBody(article);
+                post.setTitle(title);
+                post.setTagsString(tags);
+
+                postsDAO.insertPost(post);
+
+                System.out.println(title);
+                System.out.println(article);
+                System.out.println(tags);
                 response.redirect("/");
 
 

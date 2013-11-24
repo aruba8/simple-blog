@@ -7,6 +7,17 @@ public class Post {
     private String permalink;
     private String articlePreview;
 
+    public String getTagsString() {
+        return tagsString;
+    }
+
+    public void setTagsString(String tagsString) {
+        this.tagsString = tagsString;
+    }
+
+    private String tagsString;
+
+
     public String getDate() {
         return date;
     }
