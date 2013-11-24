@@ -1,6 +1,7 @@
 package blog;
 
 import blog.routes.AddPostRoute;
+import blog.routes.LoginRoute;
 import blog.routes.MainPageRoute;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
@@ -20,6 +21,7 @@ public class BlogController {
     private Configuration cfg;
     private MainPageRoute mainPageRoute;
     private AddPostRoute addPostRoute;
+    private LoginRoute loginRoute;
 
     public static void main(String[] args) throws IOException {
         String extStaticFolder = System.getenv("BLOG_DIR");
@@ -40,9 +42,11 @@ public class BlogController {
 
         mainPageRoute = new MainPageRoute(cfg, blogDB);
         addPostRoute = new AddPostRoute(cfg, blogDB);
+        loginRoute = new LoginRoute(cfg, blogDB);
 
         mainPageRoute.initMainPage();
         addPostRoute.initPage();
+        loginRoute.initPage();
 
     }
 

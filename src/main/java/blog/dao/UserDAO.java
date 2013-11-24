@@ -21,13 +21,13 @@ public class UserDAO {
     }
 
     // validates that username is unique and insert into db
-    public boolean addUser(String username, String password, String email) {
+    public boolean addUser(String username, String password, String email, Boolean isAdmin) {
 
         String passwordHash = makePasswordHash(password, Integer.toString(random.nextInt()));
 
         BasicDBObject user = new BasicDBObject();
 
-        user.append("username", username).append("password", passwordHash);
+        user.append("username", username).append("password", passwordHash).append("isAdmin", isAdmin);
 
         if (email != null && !email.equals("")) {
             // the provided email address
