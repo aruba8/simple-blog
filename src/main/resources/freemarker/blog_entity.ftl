@@ -2,11 +2,11 @@
 <html>
 <head>
     <title>Main page</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
 <h1><a href="/">BLOG</a></h1>
-
 
 <div class="nav"><- <a href="/">.</a> -></div>
 

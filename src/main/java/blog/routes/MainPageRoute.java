@@ -3,6 +3,7 @@ package blog.routes;
 import blog.BlogController;
 import blog.dao.PostsDAO;
 import blog.dao.SessionDAO;
+import blog.dao.UserDAO;
 import blog.logic.PostHandler;
 import blog.logic.PostsHandler;
 import com.mongodb.DB;
@@ -15,6 +16,7 @@ import spark.Response;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.net.URLDecoder;
 import java.util.List;
 import java.util.Map;
 
@@ -25,11 +27,13 @@ public class MainPageRoute {
     private Configuration cfg;
     private SessionDAO sessionDAO;
     private PostsDAO postsDAO;
+    private UserDAO userDAO;
 
     public MainPageRoute(final Configuration cfg, final DB blogDB){
         this.cfg = cfg;
         this.sessionDAO = new SessionDAO(blogDB);
         this.postsDAO = new PostsDAO(blogDB);
+        this.userDAO = new UserDAO(blogDB);
     }
 
 
@@ -53,20 +57,27 @@ public class MainPageRoute {
         get(new FreemarkerBasedRoute("/post/:permalink", "blog_entity.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
-                String permalink = request.params(":permalink");
+                String permalink = URLDecoder.decode(request.params(":permalink"), "UTF-8");
                 DBObject postDBObject = postsDAO.findByPermalink(permalink);
+                String cookie = BlogController.getSessionCookie(request);
+                String username = sessionDAO.findUserNameBySessionId(cookie);
+                Boolean isAdmin = userDAO.isAdminByUsername(username);
+                //todo  добавить линк на редактирование для админа
+
+
                 if(postDBObject == null){
                     response.redirect("/post_not_found");
                 } else {
+
+
                     SimpleHash root = new SimpleHash();
                     PostHandler postHandler = new PostHandler(postDBObject);
                     Map post =  postHandler.getPost();
                     root.put("post", post);
+
+                    System.out.println(post.get("articleBody"));
                     template.process(root, writer);
                 }
-
-
-                System.out.println(permalink);
 
             }
         });

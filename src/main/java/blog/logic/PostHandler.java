@@ -16,7 +16,7 @@ public class PostHandler {
         post = new Post();
     }
 
-    public Map getPost() {
+    public Map<String, String> getPost() {
         Date dateTime = (Date) postObject.get("dateTime");
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.YYYY HH:mm");
         post.setDate(sdf.format(dateTime));
@@ -32,7 +32,7 @@ public class PostHandler {
 
         post.setArticlePreview(createArticlePreview(post.getArticleBody()));
 
-        Map postEntity = new HashMap();
+        Map<String, String> postEntity = new HashMap<String, String>();
 
         postEntity.put("dateTime", post.getDate());
         postEntity.put("title", post.getTitle());

@@ -87,4 +87,16 @@ public class UserDAO {
 
         return null;
     }
+
+    public Boolean isAdminByUsername(String username) {
+        DBObject query = new BasicDBObject("username", username);
+
+        DBObject user = usersCollection.findOne(query);
+        if (user == null) {
+            return false;
+        } else {
+            Boolean isAdmin = (Boolean) user.get("isAdmin");
+            return isAdmin;
+        }
+    }
 }
