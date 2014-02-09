@@ -14,9 +14,12 @@
 <div class="title">${post["title"]}</div>
 <div class="article">
     <article>
-        ${post["articleBody"]}
+    ${post["articleBody"]}
     </article>
 </div>
+<#if admin??>
+<div class="admin"><span>admin</span></div>
+</#if>
 <div class="copyright">Erik Khalimov 2013</div>
 </body>
 </html>

@@ -52,3 +52,9 @@ h1 {
     font-size: 0.8em;
     font-weight: bold;
 }
+
+.admin {
+    position: absolute;
+    top: 10px;
+    color: red;
+}

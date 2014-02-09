@@ -17,6 +17,10 @@
 
 
 
+<#if admin??>
+<div class="admin"><span>admin</span></div>
+</#if>
+
 
 
 <div class="copyright">Erik Khalimov 2013</div>

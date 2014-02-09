@@ -45,8 +45,13 @@ public class MainPageRoute {
                 String username = sessionDAO.findUserNameBySessionId(BlogController.getSessionCookie(request));
                 List<DBObject> posts = postsDAO.findPostsByDescending(10);
                 PostsHandler postsHandler = new PostsHandler(posts);
+                Boolean isAdmin = userDAO.isAdminByUsername(username);
                 if (posts != null){
                     root.put("posts", postsHandler.getPostsList());
+                    if (isAdmin) {
+                        root.put("admin", "true");
+                    }
+
                 }else {
                     response.redirect("/internal_error");
                 }
@@ -68,21 +73,17 @@ public class MainPageRoute {
                 if(postDBObject == null){
                     response.redirect("/post_not_found");
                 } else {
-
-
                     SimpleHash root = new SimpleHash();
                     PostHandler postHandler = new PostHandler(postDBObject);
                     Map post =  postHandler.getPost();
+                    if (isAdmin) {
+                        root.put("admin", "true");
+                    }
                     root.put("post", post);
-
                     System.out.println(post.get("articleBody"));
                     template.process(root, writer);
                 }
-
             }
         });
-
-
     }
-
 }

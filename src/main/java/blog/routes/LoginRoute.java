@@ -1,5 +1,6 @@
 package blog.routes;
 
+import blog.BlogController;
 import blog.dao.SessionDAO;
 import blog.dao.UserDAO;
 import com.mongodb.DB;
@@ -39,6 +40,16 @@ public class LoginRoute {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 SimpleHash root = new SimpleHash();
+                String cookie = BlogController.getSessionCookie(request);
+                String username = sessionDAO.findUserNameBySessionId(cookie);
+                Boolean isAdmin = userDAO.isAdminByUsername(username);
+                System.out.println(isAdmin);
+                if (isAdmin) {
+                    root.put("authorized", "true");
+                } else {
+                    root.put("authorized", "false");
+                }
+
 
                 template.process(root, writer);
             }
@@ -49,13 +60,11 @@ public class LoginRoute {
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 String username = request.queryParams("username");
                 String password = request.queryParams("password");
+                String logoutParam = request.queryParams("logout");
 
                 logger.trace("Login: User submitted: " + username + "  " + password);
-
                 DBObject user = userDAO.validateLogin(username, password);
-
                 if (user != null) {
-
                     // valid user, let's log them in
                     String sessionID = sessionDAO.startSession(user.get("username").toString());
 
@@ -66,7 +75,6 @@ public class LoginRoute {
                         Cookie cookie = new Cookie("session", sessionID);
                         cookie.setMaxAge(14400);
                         response.raw().addCookie(cookie);
-
                         response.redirect("/addpost");
                     }
                 } else {
@@ -77,10 +85,39 @@ public class LoginRoute {
                     root.put("login_error", "error");
                     template.process(root, writer);
                 }
+            }
+        });
 
+        post(new FreemarkerBasedRoute("/logout", "logout.ftl", cfg) {
+            @Override
+            protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
+                String sessionId = BlogController.getSessionCookie(request);
+                if (sessionId == null) {
+                    response.redirect("/");
+                } else {
+                    sessionDAO.endSession(sessionId);
+
+                    Cookie c = getSessionCookieActual(request);
+                    c.setMaxAge(0);
+                    response.raw().addCookie(c);
+                    response.redirect("/");
+                }
 
             }
         });
+    }
+
+    // helper function to get session cookie as string
+    private Cookie getSessionCookieActual(final Request request) {
+        if (request.raw().getCookies() == null) {
+            return null;
+        }
+        for (Cookie cookie : request.raw().getCookies()) {
+            if (cookie.getName().equals("session")) {
+                return cookie;
+            }
+        }
+        return null;
     }
 
 

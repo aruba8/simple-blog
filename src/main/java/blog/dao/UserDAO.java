@@ -95,8 +95,7 @@ public class UserDAO {
         if (user == null) {
             return false;
         } else {
-            Boolean isAdmin = (Boolean) user.get("isAdmin");
-            return isAdmin;
+            return (Boolean) user.get("isAdmin");
         }
     }
 }
