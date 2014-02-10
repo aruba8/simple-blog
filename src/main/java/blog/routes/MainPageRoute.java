@@ -29,7 +29,7 @@ public class MainPageRoute {
     private PostsDAO postsDAO;
     private UserDAO userDAO;
 
-    public MainPageRoute(final Configuration cfg, final DB blogDB){
+    public MainPageRoute(final Configuration cfg, final DB blogDB) {
         this.cfg = cfg;
         this.sessionDAO = new SessionDAO(blogDB);
         this.postsDAO = new PostsDAO(blogDB);
@@ -37,7 +37,7 @@ public class MainPageRoute {
     }
 
 
-    public void initMainPage() throws IOException{
+    public void initMainPage() throws IOException {
         get(new FreemarkerBasedRoute("/", "index.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
@@ -46,13 +46,13 @@ public class MainPageRoute {
                 List<DBObject> posts = postsDAO.findPostsByDescending(10);
                 PostsHandler postsHandler = new PostsHandler(posts);
                 Boolean isAdmin = userDAO.isAdminByUsername(username);
-                if (posts != null){
+                if (posts != null) {
                     root.put("posts", postsHandler.getPostsList());
                     if (isAdmin) {
                         root.put("admin", "true");
                     }
 
-                }else {
+                } else {
                     response.redirect("/internal_error");
                 }
                 template.process(root, writer);
@@ -67,20 +67,17 @@ public class MainPageRoute {
                 String cookie = BlogController.getSessionCookie(request);
                 String username = sessionDAO.findUserNameBySessionId(cookie);
                 Boolean isAdmin = userDAO.isAdminByUsername(username);
-                //todo  добавить линк на редактирование для админа
 
-
-                if(postDBObject == null){
+                if (postDBObject == null) {
                     response.redirect("/post_not_found");
                 } else {
                     SimpleHash root = new SimpleHash();
                     PostHandler postHandler = new PostHandler(postDBObject);
-                    Map post =  postHandler.getPost();
+                    Map post = postHandler.getPost();
                     if (isAdmin) {
                         root.put("admin", "true");
                     }
                     root.put("post", post);
-                    System.out.println(post.get("articleBody"));
                     template.process(root, writer);
                 }
             }

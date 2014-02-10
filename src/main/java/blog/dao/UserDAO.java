@@ -1,7 +1,9 @@
 package blog.dao;
 
 import com.mongodb.*;
-import sun.misc.BASE64Encoder;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -15,6 +17,8 @@ import java.util.Random;
 public class UserDAO {
     private final DBCollection usersCollection;
     private Random random = new SecureRandom();
+
+    Logger logger = LogManager.getLogger(UserDAO.class.getName());
 
     public UserDAO(final DB moneyDB) {
         usersCollection = moneyDB.getCollection("users");
@@ -38,7 +42,7 @@ public class UserDAO {
             usersCollection.insert(user);
             return true;
         } catch (MongoException.DuplicateKey e) {
-            System.out.println("Username already in use: " + username);
+            logger.info("Username already in use: " + username);
             return false;
         }
     }
@@ -49,7 +53,7 @@ public class UserDAO {
         user = usersCollection.findOne(new BasicDBObject("username", username));
 
         if (user == null) {
-            System.out.println("User not in database");
+            logger.info("User not in database");
             return null;
         }
 
@@ -58,7 +62,7 @@ public class UserDAO {
         String salt = hashedAndSalted.split(",")[1];
 
         if (!hashedAndSalted.equals(makePasswordHash(password, salt))) {
-            System.out.println("Submitted password is not a match");
+            logger.info("Submitted password is not a match");
             return null;
         }
 
@@ -71,9 +75,9 @@ public class UserDAO {
             String saltedAndHashed = password + "," + salt;
             MessageDigest digest = MessageDigest.getInstance("MD5");
             digest.update(saltedAndHashed.getBytes());
-            BASE64Encoder encoder = new BASE64Encoder();
+            Base64 encoder = new Base64();
             byte hashedBytes[] = (new String(digest.digest(), "UTF-8")).getBytes();
-            return encoder.encode(hashedBytes) + "," + salt;
+            return encoder.encodeToString(hashedBytes) + "," + salt;
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException("MD5 is not available", e);
         } catch (UnsupportedEncodingException e) {

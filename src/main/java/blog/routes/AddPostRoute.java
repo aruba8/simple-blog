@@ -25,7 +25,7 @@ public class AddPostRoute {
     private PostsDAO postsDAO;
     private SessionDAO sessionDAO;
 
-    public AddPostRoute(final Configuration cfg, final DB blogDB){
+    public AddPostRoute(final Configuration cfg, final DB blogDB) {
         this.cfg = cfg;
         postsDAO = new PostsDAO(blogDB);
         sessionDAO = new SessionDAO(blogDB);
@@ -38,9 +38,9 @@ public class AddPostRoute {
                 String cookie = BlogController.getSessionCookie(request);
                 String username = sessionDAO.findUserNameBySessionId(cookie);
 
-                if(username == null){
+                if (username == null) {
                     response.redirect("/login");
-                }else {
+                } else {
                     SimpleHash root = new SimpleHash();
                     template.process(root, writer);
                 }
@@ -65,9 +65,6 @@ public class AddPostRoute {
 
                 postsDAO.insertPost(post);
 
-                System.out.println(title);
-                System.out.println(article);
-                System.out.println(tags);
                 response.redirect("/");
 
 
