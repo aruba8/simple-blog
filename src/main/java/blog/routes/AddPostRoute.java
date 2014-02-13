@@ -9,6 +9,8 @@ import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import spark.Request;
 import spark.Response;
 
@@ -21,6 +23,8 @@ import static spark.Spark.post;
 
 
 public class AddPostRoute {
+    Logger logger = LogManager.getLogger(AddPostRoute.class.getName());
+
     private Configuration cfg;
     private PostsDAO postsDAO;
     private SessionDAO sessionDAO;
@@ -52,6 +56,7 @@ public class AddPostRoute {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 String articleBody = request.queryParams("articleBody");
+                logger.info(articleBody);
 
                 String article = URLDecoder.decode(StringEscapeUtils.escapeHtml4(articleBody), "UTF-8");
                 String title = URLDecoder.decode(StringEscapeUtils.escapeHtml4(request.queryParams("title")), "UTF-8");

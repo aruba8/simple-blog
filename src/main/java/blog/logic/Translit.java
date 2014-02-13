@@ -70,7 +70,7 @@ public class Translit {
         letters.put("щ", "sh");
         letters.put("ъ", "");
         letters.put("ы", "y");
-        letters.put("ъ", "");
+        letters.put("ь", "");
         letters.put("э", "e");
         letters.put("ю", "u");
         letters.put("я", "ya");
@@ -104,6 +104,7 @@ public class Translit {
         letters.put("]", "");
         letters.put("<", "");
         letters.put(">", "");
+        letters.put("€", "");
     }
 
 
@@ -114,16 +115,9 @@ public class Translit {
             if (letters.containsKey(l)) {
                 sb.append(letters.get(l));
             } else {
-                sb.append("_");
+                sb.append(l);
             }
         }
         return sb.toString();
     }
-
-
-    public static void main(String[] args) {
-        String test = "В конце прошлого года правительство объявило, что планирует снизить таможенный лимит с €1000 до €150. Таможенники подхватили эту инициативу и высказали желание ограничить вес беспошлинного ввоза до";
-        System.out.println(toTranslit(test));
-    }
-
 }

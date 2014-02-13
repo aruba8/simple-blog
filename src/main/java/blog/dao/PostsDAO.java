@@ -54,14 +54,15 @@ public class PostsDAO {
 
     private String createPermalink(String title){
         String titleInTranslit = Translit.toTranslit(title);
-        String permalink = titleInTranslit.replaceAll("\\s", "_");
+        String permalink = titleInTranslit.replaceAll("\\s", "-");
         permalink = permalink.replaceAll("\\W", "");
         permalink = permalink.toLowerCase();
-        return permalink.substring(0, 60);
+        if (permalink.length() > 60) {
+            return permalink.substring(0, 60);
+        } else {
+            return permalink;
+        }
     }
-
-
-
 
 }
 
