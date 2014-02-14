@@ -67,4 +67,19 @@ p, p div {
 
 #article-body {
     height: 50px;
+    margin-top: 30px;
+}
+
+textarea {
+    width: 100%;
+    margin: 0 auto;
+    min-height: 400px;
+    background-color: #2e3436;
+    color: white !important;
+    padding: 3px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9em;
+    text-align: justify;
+
 }
