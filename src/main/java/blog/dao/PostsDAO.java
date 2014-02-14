@@ -20,15 +20,16 @@ public class PostsDAO {
 
     public void insertPost(Post post){
         String permalink = createPermalink(post.getTitle());
-        String [] tags = post.getTagsString().split(",");
-        logger.info(post.getTitle());
-        logger.info(permalink);
 
-        DBObject queryToInsertPost = new BasicDBObject("dateTime", new Date())
+        BasicDBObject queryToInsertPost = new BasicDBObject("dateTime", new Date())
                 .append("title", post.getTitle())
                 .append("articleBody", post.getArticleBody())
-                .append("tags", tags)
                 .append("permalink", permalink);
+
+        if (post.getTagsString() != null) {
+            String[] tags = post.getTagsString().split(",");
+            queryToInsertPost.append("tags", tags);
+        }
 
         postCollection.insert(queryToInsertPost);
 
@@ -55,7 +56,7 @@ public class PostsDAO {
     private String createPermalink(String title){
         String titleInTranslit = Translit.toTranslit(title);
         String permalink = titleInTranslit.replaceAll("\\s", "-");
-        permalink = permalink.replaceAll("\\W", "");
+        permalink = permalink.replaceAll("\\W", "-");
         permalink = permalink.toLowerCase();
         if (permalink.length() > 60) {
             return permalink.substring(0, 60);

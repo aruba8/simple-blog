@@ -15,10 +15,9 @@ public class PostsHandler {
 
     public List<Map> getPostsList() {
         List<Map> postsList = new ArrayList<Map>();
-        for (int i =0; i < posts.size(); i++) {
-            DBObject post = posts.get(i);
-            PostHandler postHandler = new PostHandler(post);
-            Map postsMap = postHandler.getPost();
+        for (DBObject post : posts) {
+            PostHandler postHandler = new PostHandler();
+            Map postsMap = postHandler.getPost(post);
             postsList.add(postsMap);
         }
         return postsList;

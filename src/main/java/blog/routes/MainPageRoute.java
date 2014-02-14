@@ -72,8 +72,8 @@ public class MainPageRoute {
                     response.redirect("/post_not_found");
                 } else {
                     SimpleHash root = new SimpleHash();
-                    PostHandler postHandler = new PostHandler(postDBObject);
-                    Map post = postHandler.getPost();
+                    PostHandler postHandler = new PostHandler();
+                    Map post = postHandler.getPost(postDBObject);
                     if (isAdmin) {
                         root.put("admin", "true");
                     }

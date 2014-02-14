@@ -3,7 +3,7 @@ package blog.routes;
 import blog.BlogController;
 import blog.dao.PostsDAO;
 import blog.dao.SessionDAO;
-import blog.logic.Post;
+import blog.logic.PostHandler;
 import com.mongodb.DB;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
@@ -57,22 +57,10 @@ public class AddPostRoute {
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 String articleBody = request.queryParams("articleBody");
                 logger.info(articleBody);
-
                 String article = URLDecoder.decode(StringEscapeUtils.escapeHtml4(articleBody), "UTF-8");
-                String title = URLDecoder.decode(StringEscapeUtils.escapeHtml4(request.queryParams("title")), "UTF-8");
-                String tags = URLDecoder.decode(StringEscapeUtils.escapeHtml4(request.queryParams("tags")), "UTF-8");
-
-                Post post = new Post();
-
-                post.setArticleBody(article);
-                post.setTitle(title);
-                post.setTagsString(tags);
-
-                postsDAO.insertPost(post);
-
+                logger.info(article);
+                postsDAO.insertPost(PostHandler.preparePost(article));
                 response.redirect("/");
-
-
             }
         });
     }
