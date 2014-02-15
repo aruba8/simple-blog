@@ -15,10 +15,10 @@
 <!-- Place this in the body of the page content -->
 <form method="post" action="/addpost">
     <textarea id="article-body" name="articleBody">
-        Title:
-        Categories:
-        ~~~~~~~~~~~~~~
-    </textarea>
+Title:
+Categories:
+~~~~~~~~~~~~~~
+</textarea>
     <input type="submit" name="submit" value="submit">
 </form>
 
