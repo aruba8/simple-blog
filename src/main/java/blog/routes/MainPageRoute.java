@@ -11,6 +11,7 @@ import com.mongodb.DBObject;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
+import org.markdown4j.Markdown4jProcessor;
 import spark.Request;
 import spark.Response;
 
@@ -72,8 +73,11 @@ public class MainPageRoute {
                     response.redirect("/post_not_found");
                 } else {
                     SimpleHash root = new SimpleHash();
-                    PostHandler postHandler = new PostHandler();
-                    Map post = postHandler.getPost(postDBObject);
+
+                    Map post = PostHandler.getPost(postDBObject);
+                    String html = new Markdown4jProcessor().process((String) post.get("articleBody"));
+
+
                     if (isAdmin) {
                         root.put("admin", "true");
                     }
