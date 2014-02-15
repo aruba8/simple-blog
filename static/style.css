@@ -1,19 +1,29 @@
 @import "http://webfonts.ru/import/anonym.css";
 
-body {
+html, body {
     width: 600px;
-    height: 1024px;
+    height: 100%;
     margin: 0 auto;
     background-color: #FFFAF0;
+    font-family: "jaf-bernino-sans","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;
+    overflow-wrap: break-word;
+    text-align: justify;
+
+
+
 
 }
 
 a, a:visited {
-    /*text-decoration: none;*/
+    text-decoration: none;
     color: #0d2d2b;
 }
 
-h1, h3 {
+#header {
+    text-align: center;
+}
+
+h3 {
     font-family: Arial, Helvetica, sans-serif;
     text-align: justify;
 }
@@ -31,26 +41,42 @@ h1, h3 {
     font-size: 1.5em;
     padding-bottom: 15px;
     font-weight: bold;
+}
 
+.article {
+    text-align: justify;
+    color: #666666;
+    padding: 0 10px 0 0;
 
 }
 
-.article, article {
-    text-align: justify;
-    font-family: Arial, Helvetica, sans-serif;
+* html #content{
+    height: 100%;
+}
+
+#content{
+    min-height: 100%;
+    position: relative;
+
+}
+
+.article-preview {
+    font-size: 0.9em;
+    color: #666666;
 }
 
 .nav {
-    /*margin: 0 auto;*/
     text-align: center;
 }
 
 .copyright {
+    height: 2.5em;
     text-align: center;
-    margin-bottom: 10px;
+    margin-top: -2.5em;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 0.8em;
     font-weight: bold;
+    position: relative;
 }
 
 .admin {
@@ -61,7 +87,6 @@ h1, h3 {
 
 p div {
     background-color: #DDDDDD;
-    font-family: 'Anonymous Pro';
 }
 
 #article-body {
@@ -70,6 +95,7 @@ p div {
 }
 
 textarea {
+    font-family: 'Anonymous Pro';
     width: 100%;
     margin: 0 auto;
     min-height: 400px;
@@ -80,5 +106,20 @@ textarea {
     border: none;
     font-size: 0.9em;
     text-align: justify;
+}
 
+.post-info, .post-info li a{
+    list-style: none;
+    list-style-image: none;
+    color: #999999;
+}
+
+.post-info li {
+    display: inline;
+}
+
+ul.post-info {
+    padding: 0;
+    margin: 0;
+    display: block;
 }

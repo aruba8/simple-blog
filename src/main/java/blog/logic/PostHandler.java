@@ -1,5 +1,6 @@
 package blog.logic;
 
+import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
 import org.markdown4j.Markdown4jProcessor;
 
@@ -11,7 +12,7 @@ import java.util.Map;
 
 public class PostHandler {
 
-    public static Map<String, String> getPost(DBObject postObject) {
+    public static Map<String, Object> getPost(DBObject postObject) {
         Post post = new Post();
         Date dateTime = (Date) postObject.get("dateTime");
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.YYYY HH:mm");
@@ -26,13 +27,15 @@ public class PostHandler {
         String permalink = (String) postObject.get("permalink");
         post.setPermalink(permalink);
 
+        BasicDBList tags = (BasicDBList) postObject.get("tags");
+
         try {
             post.setArticlePreview(createArticlePreview(post.getArticleBody()));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        Map<String, String> postEntity = new HashMap<String, String>();
+        Map<String, Object> postEntity = new HashMap<String, Object>();
 
         try {
             String htmlArticle = new Markdown4jProcessor().process(post.getArticleBody());
@@ -41,6 +44,10 @@ public class PostHandler {
             postEntity.put("articleBody", htmlArticle);
             postEntity.put("permalink", post.getPermalink());
             postEntity.put("articlePreview", post.getArticlePreview());
+            if(tags != null){
+                postEntity.put("tags", tags.toArray());
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -18,7 +18,6 @@ import spark.Response;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URLDecoder;
-import java.util.List;
 import java.util.Map;
 
 import static spark.Spark.get;
@@ -43,19 +42,7 @@ public class MainPageRoute {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 SimpleHash root = new SimpleHash();
-                String username = sessionDAO.findUserNameBySessionId(BlogController.getSessionCookie(request));
-                List<DBObject> posts = postsDAO.findPostsByDescending(10);
-                PostsHandler postsHandler = new PostsHandler(posts);
-                Boolean isAdmin = userDAO.isAdminByUsername(username);
-                if (posts != null) {
-                    root.put("posts", postsHandler.getPostsList());
-                    if (isAdmin) {
-                        root.put("admin", "true");
-                    }
-
-                } else {
-                    response.redirect("/internal_error");
-                }
+                root.put("posts", PostsHandler.getPostsList(postsDAO.findPostsByDescending(10)));
                 template.process(root, writer);
             }
         });

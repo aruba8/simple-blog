@@ -7,20 +7,21 @@
 
 </head>
 <body>
-<h1><a href="/">BLOG</a></h1>
-
+<div id="header"><h1><a href="/">BLOG</a></h1></div>
+<div id="content">
 <#list posts as post>
     <h3><a href="/post/${post["permalink"]}">${post["title"]} ${post["dateTime"]}</a></h3>
-    <article>${post["articlePreview"]}</article>
+    <article class="article-preview">${post["articlePreview"]}</article>
+    <ul class="post-info">
+    <#if post.tags ??>
+    <#list post.tags as tag>
+    <li><a href="/category?c=${tag}">${tag}</a></li>
+    </#list>
+    </#if>
+    </ul>
 </#list>
 
-
-
-
-<#if admin??>
-<div class="admin"><span>admin</span></div>
-</#if>
-
+</div>
 
 
 <div class="copyright">Erik Khalimov 2013</div>

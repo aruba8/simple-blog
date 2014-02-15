@@ -6,9 +6,7 @@ import com.mongodb.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class PostsDAO {
     private DBCollection postCollection;
@@ -35,17 +33,10 @@ public class PostsDAO {
 
     }
 
-    public List<DBObject> findPostsByDescending(int limit){
-        List<DBObject> posts = new ArrayList<DBObject>();
-
+    public DBCursor findPostsByDescending(int limit){
         DBObject sortQuery = new BasicDBObject("dateTime", -1);
         DBCursor cursor = postCollection.find().sort(sortQuery).limit(limit);
-
-        while (cursor.hasNext()){
-            posts.add(cursor.next());
-        }
-
-        return posts;
+        return cursor;
     }
 
     public DBObject findByPermalink(String permalink){

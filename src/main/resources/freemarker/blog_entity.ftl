@@ -6,20 +6,26 @@
     <link rel="stylesheet" href="../style.css">
 </head>
 <body>
-<h1><a href="/">BLOG</a></h1>
+<div id="header"><h1><a href="/">BLOG</a></h1></div>
 
-<div class="nav"><- <a href="/">.</a> -></div>
+<div id="content">
 
 <div class="date">${post["dateTime"]}</div>
 <div class="title">${post["title"]}</div>
-<div class="article">
+    <ul class="post-info">
+    <#if post.tags ??>
+        <#list post.tags as tag>
+            <li><a href="/category?c=${tag}">${tag}</a></li>
+        </#list>
+    </#if>
+    </ul>
+
+    <div class="article">
     <article>
     ${post["articleBody"]}
     </article>
 </div>
-<#if admin??>
-<div class="admin"><span>admin</span></div>
-</#if>
+</div>
 <div class="copyright">Erik Khalimov 2013</div>
 </body>
 </html>

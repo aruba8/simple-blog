@@ -6,6 +6,7 @@ public class Post {
     private String articleBody;
     private String permalink;
     private String articlePreview;
+    private String [] tags;
 
     public String getTagsString() {
         return tagsString;
@@ -56,5 +57,13 @@ public class Post {
 
     public void setArticlePreview(String articlePreview) {
         this.articlePreview = articlePreview;
+    }
+
+    public String[] getTags() {
+        return tags;
+    }
+
+    public void setTags(String[] tags) {
+        this.tags = tags;
     }
 }
