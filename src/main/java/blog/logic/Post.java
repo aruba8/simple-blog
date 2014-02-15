@@ -8,17 +8,6 @@ public class Post {
     private String articlePreview;
     private String [] tags;
 
-    public String getTagsString() {
-        return tagsString;
-    }
-
-    public void setTagsString(String tagsString) {
-        this.tagsString = tagsString;
-    }
-
-    private String tagsString;
-
-
     public String getDate() {
         return date;
     }
