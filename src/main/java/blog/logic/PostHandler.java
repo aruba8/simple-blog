@@ -72,16 +72,19 @@ public class PostHandler {
         String body = splitRawPost[1];
         String[] splitHead = head.split("Categories:");
         String title = splitHead[0].substring(6, splitHead[0].length());
-        String categories = null;
+        String categoriesString = null;
+        String [] categories = null;
         if (splitHead.length > 1) {
-            categories = splitHead[1];
-            categories = categories.trim();
+            categoriesString = splitHead[1];
+            categoriesString = categoriesString.trim();
+            categories = categoriesString.split(", ");
         }
 
         Post post = new Post();
         post.setArticleBody(body.trim());
         post.setTitle(title.trim());
-        post.setTagsString(categories);
+        post.setTagsString(categoriesString);
+        post.setTags(categories);
         return post;
     }
 }

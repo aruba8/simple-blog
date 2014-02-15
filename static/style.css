@@ -1,8 +1,11 @@
 @import "http://webfonts.ru/import/anonym.css";
-
-html, body {
-    width: 600px;
+html {
     height: 100%;
+}
+
+body {
+    width: 600px;
+    height: 90%;
     margin: 0 auto;
     background-color: #FFFAF0;
     font-family: "jaf-bernino-sans","Lucida Grande","Lucida Sans Unicode","Lucida Sans",Geneva,Verdana,sans-serif;
@@ -25,7 +28,7 @@ a, a:visited {
 
 h3 {
     font-family: Arial, Helvetica, sans-serif;
-    text-align: justify;
+    text-align: left;
 }
 
 .date {
@@ -57,6 +60,7 @@ h3 {
 #content{
     min-height: 100%;
     position: relative;
+    margin-bottom: 40px;
 
 }
 

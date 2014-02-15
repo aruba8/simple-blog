@@ -24,8 +24,8 @@ public class PostsDAO {
                 .append("articleBody", post.getArticleBody())
                 .append("permalink", permalink);
 
-        if (post.getTagsString() != null) {
-            String[] tags = post.getTagsString().split(",");
+        if (post.getTags() != null) {
+            String[] tags = post.getTags();
             queryToInsertPost.append("tags", tags);
         }
 
@@ -36,6 +36,13 @@ public class PostsDAO {
     public DBCursor findPostsByDescending(int limit){
         DBObject sortQuery = new BasicDBObject("dateTime", -1);
         DBCursor cursor = postCollection.find().sort(sortQuery).limit(limit);
+        return cursor;
+    }
+
+    public DBCursor findPostsByTagDesc(String tag, int limit){
+        DBObject sortQuery = new BasicDBObject("dateTime", -1);
+        DBObject query = new BasicDBObject("tags", tag);
+        DBCursor cursor = postCollection.find(query).sort(sortQuery).limit(limit);
         return cursor;
     }
 

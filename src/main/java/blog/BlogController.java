@@ -1,6 +1,7 @@
 package blog;
 
 import blog.routes.AddPostRoute;
+import blog.routes.CategoriesRoute;
 import blog.routes.LoginRoute;
 import blog.routes.MainPageRoute;
 import com.mongodb.DB;
@@ -11,17 +12,12 @@ import spark.Request;
 
 import javax.servlet.http.Cookie;
 import java.io.IOException;
-import java.net.UnknownHostException;
 
 import static spark.Spark.externalStaticFileLocation;
 import static spark.Spark.setPort;
 
 
 public class BlogController {
-    private Configuration cfg;
-    private MainPageRoute mainPageRoute;
-    private AddPostRoute addPostRoute;
-    private LoginRoute loginRoute;
 
     public static void main(String[] args) throws IOException {
         String extStaticFolder = System.getenv("BLOG_DIR");
@@ -35,16 +31,18 @@ public class BlogController {
     public BlogController(String mongoURIString, String extStaticFolder) throws IOException {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURIString));
         final DB blogDB = mongoClient.getDB("blog");
-        cfg = createFreemarkerConfiguration();
+        Configuration cfg = createFreemarkerConfiguration();
         cfg.setDefaultEncoding("UTF-8");
         externalStaticFileLocation(extStaticFolder);
         setPort(8080);
 
-        mainPageRoute = new MainPageRoute(cfg, blogDB);
-        addPostRoute = new AddPostRoute(cfg, blogDB);
-        loginRoute = new LoginRoute(cfg, blogDB);
+        MainPageRoute mainPageRoute = new MainPageRoute(cfg, blogDB);
+        AddPostRoute addPostRoute = new AddPostRoute(cfg, blogDB);
+        LoginRoute loginRoute = new LoginRoute(cfg, blogDB);
+        CategoriesRoute categoriesRoute = new CategoriesRoute(cfg, blogDB);
 
         mainPageRoute.initMainPage();
+        categoriesRoute.initPage();
         addPostRoute.initPage();
         loginRoute.initPage();
 
