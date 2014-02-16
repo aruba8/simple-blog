@@ -65,13 +65,16 @@ public class PostHandler {
     }
 
 
-    public static Post preparePost(String rawPost) {
+    public static Post preparePost(String rawPost) throws Exception {
         String splitRawPost[] = rawPost.split("~~~~~~~~~~~~~~");
         String head = splitRawPost[0];
         head = head.replaceAll("\n|\r\n", "");
         String body = splitRawPost[1];
         String[] splitHead = head.split("Categories:");
         String title = splitHead[0].substring(6, splitHead[0].length());
+        if (title.length() < 5){
+            throw new Exception("Title is less than 5 characters");
+        }
         String [] categories = null;
         if (splitHead.length > 1) {
             String categoriesString = splitHead[1];

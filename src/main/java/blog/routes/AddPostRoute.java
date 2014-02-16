@@ -55,10 +55,16 @@ public class AddPostRoute extends BaseRoute{
         post(new FreemarkerBasedRoute("/addpost", "addPost.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
-                logger.info(request.requestMethod()+" "+request.headers("Referer"));
+                logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Referer"));
                 String articleBody = request.queryParams("articleBody");
-                postsDAO.insertPost(PostHandler.preparePost(articleBody));
-                response.redirect("/");
+                try {
+                    postsDAO.insertPost(PostHandler.preparePost(articleBody));
+                    response.redirect("/");
+                } catch (Exception e) {
+                    logger.error(e.getMessage());
+                    response.cookie("postError", "Title should contain more than 5 characters", 10);
+                    response.redirect("/addpost");
+                }
             }
         });
     }
