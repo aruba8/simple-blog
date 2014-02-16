@@ -7,7 +7,7 @@
 
 </head>
 <body>
-<div id="header"><h1><a href="/">BLOG</a></h1></div>
+<div id="header"><h1><a href="/">${blogName}</a></h1></div>
 <div id="content">
 <div class="category"><h2>Category: ${category}</h2></div>
 <#list posts as post>

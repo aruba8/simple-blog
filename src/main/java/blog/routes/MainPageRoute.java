@@ -11,6 +11,8 @@ import com.mongodb.DBObject;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import spark.Request;
 import spark.Response;
 
@@ -21,7 +23,9 @@ import java.util.Map;
 
 import static spark.Spark.get;
 
-public class MainPageRoute {
+public class MainPageRoute extends BaseRoute{
+
+    Logger logger = LogManager.getLogger(MainPageRoute.class.getName());
 
     private Configuration cfg;
     private SessionDAO sessionDAO;
@@ -40,7 +44,9 @@ public class MainPageRoute {
         get(new FreemarkerBasedRoute("/", "index.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
+                logger.info(request.requestMethod()+" "+request.headers("Referer"));
                 SimpleHash root = new SimpleHash();
+                root.put("blogName", blogName);
                 root.put("posts", PostsHandler.getPostsList(postsDAO.findPostsByDescending(10)));
                 template.process(root, writer);
             }
@@ -54,11 +60,15 @@ public class MainPageRoute {
                 String cookie = BlogController.getSessionCookie(request);
                 String username = sessionDAO.findUserNameBySessionId(cookie);
                 Boolean isAdmin = userDAO.isAdminByUsername(username);
+                logger.info(request.requestMethod()+" "+request.headers("Referer"));
+
 
                 if (postDBObject == null) {
                     response.redirect("/post_not_found");
                 } else {
                     SimpleHash root = new SimpleHash();
+                    root.put("diqusShortName", configParser.getDisqusShortName());
+                    root.put("blogName", blogName);
 
                     Map post = PostHandler.getPost(postDBObject);
 

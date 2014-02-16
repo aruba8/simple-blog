@@ -20,7 +20,7 @@ import static spark.Spark.get;
 import static spark.Spark.post;
 
 
-public class AddPostRoute {
+public class AddPostRoute extends BaseRoute{
     Logger logger = LogManager.getLogger(AddPostRoute.class.getName());
 
     private Configuration cfg;
@@ -39,11 +39,13 @@ public class AddPostRoute {
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 String cookie = BlogController.getSessionCookie(request);
                 String username = sessionDAO.findUserNameBySessionId(cookie);
+                logger.info(request.requestMethod()+" "+request.headers("Referer"));
 
                 if (username == null) {
                     response.redirect("/login");
                 } else {
                     SimpleHash root = new SimpleHash();
+                    root.put("blogName", blogName);
                     template.process(root, writer);
                 }
 
@@ -53,10 +55,8 @@ public class AddPostRoute {
         post(new FreemarkerBasedRoute("/addpost", "addPost.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
+                logger.info(request.requestMethod()+" "+request.headers("Referer"));
                 String articleBody = request.queryParams("articleBody");
-                logger.info(articleBody);
-//                String article = URLDecoder.decode(StringEscapeUtils.escapeHtml4(articleBody), "UTF-8");
-//                logger.info(article);
                 postsDAO.insertPost(PostHandler.preparePost(articleBody));
                 response.redirect("/");
             }

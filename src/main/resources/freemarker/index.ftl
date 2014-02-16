@@ -7,7 +7,7 @@
 
 </head>
 <body>
-<div id="header"><h1><a href="/">BLOG</a></h1></div>
+<div id="header"><h1><a href="/">${blogName}</a></h1></div>
 <div id="content">
 <#list posts as post>
     <h3><a href="/post/${post["permalink"]}">${post["title"]} ${post["dateTime"]}</a></h3>

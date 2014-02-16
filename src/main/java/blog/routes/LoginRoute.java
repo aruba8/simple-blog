@@ -22,7 +22,7 @@ import static spark.Spark.get;
 import static spark.Spark.post;
 
 
-public class LoginRoute {
+public class LoginRoute extends BaseRoute{
     private Configuration cfg;
     private UserDAO userDAO;
     private SessionDAO sessionDAO;
@@ -39,6 +39,7 @@ public class LoginRoute {
         get(new FreemarkerBasedRoute("/login", "login.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
+                logger.info(request.requestMethod()+" "+request.headers("Referer"));
                 SimpleHash root = new SimpleHash();
                 String cookie = BlogController.getSessionCookie(request);
                 String username = sessionDAO.findUserNameBySessionId(cookie);
@@ -56,6 +57,7 @@ public class LoginRoute {
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 String username = request.queryParams("username");
                 String password = request.queryParams("password");
+                logger.info(request.requestMethod()+" "+request.headers("Referer"));
 
                 logger.trace("Login: User submitted: " + username + "  " + "***********");
                 DBObject user = userDAO.validateLogin(username, password);
@@ -87,6 +89,7 @@ public class LoginRoute {
         post(new FreemarkerBasedRoute("/logout", "logout.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
+                logger.info(request.requestMethod()+" "+request.headers("Referer"));
                 String sessionId = BlogController.getSessionCookie(request);
                 if (sessionId == null) {
                     response.redirect("/login");
@@ -105,13 +108,17 @@ public class LoginRoute {
         get(new FreemarkerBasedRoute("/signup", "signup.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
+                logger.info(request.requestMethod()+" "+request.headers("Referer"));
+
                 SimpleHash root = new SimpleHash();
+                root.put("blogName", blogName);
                 template.process(root, writer);
             }
         });
         post(new FreemarkerBasedRoute("/signup", "signup.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
+                logger.info(request.requestMethod()+" "+request.headers("Referer"));
                 SimpleHash root = new SimpleHash();
                 String username = request.queryParams("username");
                 String password1 = request.queryParams("password_1");
