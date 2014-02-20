@@ -44,7 +44,7 @@ public class MainPageRoute extends BaseRoute{
         get(new FreemarkerBasedRoute("/", "index.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
-                logger.info(request.requestMethod()+" "+request.headers("Referer"));
+                logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
                 SimpleHash root = new SimpleHash();
                 root.put("blogName", blogName);
                 root.put("posts", PostsHandler.getPostsList(postsDAO.findPostsByDescending(10)));
@@ -60,7 +60,7 @@ public class MainPageRoute extends BaseRoute{
                 String cookie = BlogController.getSessionCookie(request);
                 String username = sessionDAO.findUserNameBySessionId(cookie);
                 Boolean isAdmin = userDAO.isAdminByUsername(username);
-                logger.info(request.requestMethod()+" "+request.headers("Referer"));
+                logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
 
 
                 if (postDBObject == null) {

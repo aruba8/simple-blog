@@ -108,7 +108,7 @@ public class LoginRoute extends BaseRoute{
         get(new FreemarkerBasedRoute("/signup", "signup.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
-                logger.info(request.requestMethod()+" "+request.headers("Referer"));
+                logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
 
                 SimpleHash root = new SimpleHash();
                 root.put("blogName", blogName);
@@ -118,7 +118,7 @@ public class LoginRoute extends BaseRoute{
         post(new FreemarkerBasedRoute("/signup", "signup.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
-                logger.info(request.requestMethod()+" "+request.headers("Referer"));
+                logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
                 SimpleHash root = new SimpleHash();
                 String username = request.queryParams("username");
                 String password1 = request.queryParams("password_1");

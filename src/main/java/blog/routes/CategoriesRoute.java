@@ -33,7 +33,7 @@ public class CategoriesRoute extends BaseRoute{
         get(new FreemarkerBasedRoute("/category", "category.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
-                logger.info(request.requestMethod()+" "+request.headers("Referer"));
+                logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
                 String tag = request.queryParams("c");
 
                 DBCursor postsCursor = postsDAO.findPostsByTagDesc(tag, 10);
