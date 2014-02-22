@@ -2,6 +2,8 @@ package blog.logic;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.DBObject;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.markdown4j.Markdown4jProcessor;
 
 import java.io.IOException;
@@ -11,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class PostHandler {
+    private static Logger logger = LogManager.getLogger(PostHandler.class.getName());
 
     public static Map<String, Object> getPost(DBObject postObject) {
         Post post = new Post();
@@ -35,10 +38,14 @@ public class PostHandler {
             e.printStackTrace();
         }
 
+        logger.debug(post.getArticleBody());
+
+
         Map<String, Object> postEntity = new HashMap<String, Object>();
 
         try {
             String htmlArticle = new Markdown4jProcessor().process(post.getArticleBody());
+
             postEntity.put("dateTime", post.getDate());
             postEntity.put("title", post.getTitle());
             postEntity.put("articleBody", htmlArticle);
@@ -86,6 +93,7 @@ public class PostHandler {
         post.setArticleBody(body.trim());
         post.setTitle(title.trim());
         post.setTags(categories);
+        logger.debug(post.getArticleBody());
         return post;
     }
 }

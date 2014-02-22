@@ -4,7 +4,8 @@
     <title>Main page</title>
     <link rel="stylesheet" href="style.css">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
+    <link rel="stylesheet" href="../github.css">
+    <script src="../highlight.pack.js"></script>
 </head>
 <body>
 <div id="header"><h1><a href="/">${blogName}</a></h1></div>
@@ -22,7 +23,7 @@
 </#list>
 
 </div>
-
+<script>hljs.initHighlightingOnLoad();</script>
 
 <div class="copyright">by <a href="https://github.com/biomaks/simple-blog">Simple Blog</a> 2013</div>
 </body>

@@ -16,8 +16,6 @@ import java.io.Writer;
  */
 public abstract class FreemarkerBasedRoute extends Route {
     final Template template;
-//
-
     /**
      * Constructor
      *
@@ -27,7 +25,6 @@ public abstract class FreemarkerBasedRoute extends Route {
         super(path);
         template = cfg.getTemplate(templateName);
     }
-
 
     @Override
     public Object handle(Request request, Response response) {

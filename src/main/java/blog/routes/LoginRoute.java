@@ -59,7 +59,7 @@ public class LoginRoute extends BaseRoute{
                 String password = request.queryParams("password");
                 logger.info(request.requestMethod()+" "+request.headers("Referer"));
 
-                logger.trace("Login: User submitted: " + username + "  " + "***********");
+                logger.info("Login: User submitted: " + username + "  " + "***********");
                 DBObject user = userDAO.validateLogin(username, password);
                 if (user != null) {
                     // valid user, let's log them in
@@ -89,7 +89,7 @@ public class LoginRoute extends BaseRoute{
         post(new FreemarkerBasedRoute("/logout", "logout.ftl", cfg) {
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
-                logger.info(request.requestMethod()+" "+request.headers("Referer"));
+                logger.info(request.requestMethod().toUpperCase()+" "+request.headers("User-Agent"));
                 String sessionId = BlogController.getSessionCookie(request);
                 if (sessionId == null) {
                     response.redirect("/login");
@@ -128,17 +128,20 @@ public class LoginRoute extends BaseRoute{
 
                 if (!password1.equals(password2)) {
                     root.put("error", "passwords are not equal");
+                    logger.warn("passwords are not equal");
                     template.process(root, writer);
                 } else if (username.trim().equals("") || username.length() < 3) {
                     root.put("error", "username must contain at least 3 chars");
+                    logger.warn("username must contain at least 3 chars");
                     template.process(root, writer);
                 } else if (!userDAO.addUser(username, password1, email, false)) {
                     root.put("error", "username already in use");
+                    logger.warn("username already in use");
                     template.process(root, writer);
                 } else {
                     // good user, let's start a session
                     String sessionID = sessionDAO.startSession(username);
-                    logger.trace("Session ID is" + sessionID);
+                    logger.info("Session ID is" + sessionID);
                     response.raw().addCookie(new Cookie("session", sessionID));
                     response.redirect("/");
                 }

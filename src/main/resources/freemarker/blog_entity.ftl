@@ -4,6 +4,8 @@
     <title>Main page</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../github.css">
+    <script src="../highlight.pack.js"></script>
 </head>
 <body>
 <div id="header"><h1><a href="/">${blogName}</a></h1></div>
@@ -41,6 +43,7 @@
     <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
     <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
 </div>
+    <script>hljs.initHighlightingOnLoad();</script>
 </div>
     <div class="copyright">by <a href="https://github.com/biomaks/simple-blog">Simple Blog</a> 2013</div>
 </body>

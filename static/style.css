@@ -98,6 +98,10 @@ p div {
     margin-top: 30px;
 }
 
+.article a {
+    color: red;
+}
+
 textarea {
     font-family: 'Anonymous Pro';
     width: 100%;

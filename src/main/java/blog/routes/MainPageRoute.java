@@ -71,6 +71,7 @@ public class MainPageRoute extends BaseRoute{
                     root.put("blogName", blogName);
 
                     Map post = PostHandler.getPost(postDBObject);
+                    logger.debug(post.get("articleBody"));
 
                     if (isAdmin) {
                         root.put("admin", "true");

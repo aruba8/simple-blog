@@ -57,6 +57,7 @@ public class AddPostRoute extends BaseRoute{
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
                 String articleBody = request.queryParams("articleBody");
+                logger.debug(articleBody);
                 try {
                     postsDAO.insertPost(PostHandler.preparePost(articleBody));
                     response.redirect("/");
