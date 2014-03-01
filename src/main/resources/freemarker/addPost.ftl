@@ -20,7 +20,7 @@ Title:
 Categories:
 ~~~~~~~~~~~~~~
 </textarea>
-    <input type="submit" name="submit" value="submit">
+    <input type="submit" name="submit" value="submit" />
 </form>
 
 <script>

@@ -30,7 +30,8 @@ public abstract class FreemarkerBasedRoute extends Route {
     public Object handle(Request request, Response response) {
         StringWriter writer = new StringWriter();
         try {
-            response.header("Content-Type", "text/html;charset=UTF-8");
+            response.header("Transfer-Encoding","chunked");
+            response.header("Content-Type", "text/html; charset=UTF-8");
             doHandle(request, response, writer);
 
         } catch (Exception e) {

@@ -64,8 +64,11 @@ public class PostHandler {
 
     private static String createArticlePreview(String article) throws IOException {
         if (article.length() > 600) {
-            String htmlPreview = new Markdown4jProcessor().process(article);
-            return htmlPreview.substring(0, 600);
+//            logger.warn(article);
+            String htmlPreview = new Markdown4jProcessor().process(article.substring(0, 600));
+//            logger.warn(htmlPreview);
+
+            return htmlPreview;
         } else {
             return new Markdown4jProcessor().process(article);
         }
