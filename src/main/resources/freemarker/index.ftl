@@ -1,17 +1,28 @@
-<!DOCTYPE html>
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <title>Main page</title>
-    <link rel="stylesheet" href="style.css">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" href="../github.css">
+    <link rel="stylesheet" href="style.css"/>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="../github.css"/>
     <script src="../highlight.pack.js"></script>
 </head>
 <body>
 <div id="header"><h1><a href="/">${blogName}</a></h1></div>
+<div id="nav">
+    <ul>
+        <li>Blog</li>
+        <li>//</li>
+        <li>About</li>
+        <li>//</li>
+        <li>Links</li>
+    </ul>
+</div>
 <div id="content">
 <#list posts as post>
-    <h3><a href="/post/${post["permalink"]}">${post["title"]} ${post["dateTime"]}</a></h3>
+    <h3><a href="/post/${post["permalink"]}">${post["title"]}</a></h3>
+    <label>${post["dateTime"]}</label>
     <article class="article-preview">${post["articlePreview"]}</article>
     <ul class="post-info">
     <#if post.tags ??>
@@ -19,6 +30,7 @@
     <li><a href="/category?c=${tag}">${tag}</a></li>
     </#list>
     </#if>
+        <li class="more"><a href="/post/${post["permalink"]}">Read ...</a></li>
     </ul>
 </#list>
 

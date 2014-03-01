@@ -10,7 +10,7 @@ import java.util.Date;
 
 public class PostsDAO {
     private DBCollection postCollection;
-    Logger logger = LogManager.getLogger(PostsDAO.class.getName());
+    private Logger logger = LogManager.getLogger(PostsDAO.class.getName());
 
     public PostsDAO(final DB blogDB){
         postCollection = blogDB.getCollection("posts");
@@ -35,15 +35,13 @@ public class PostsDAO {
 
     public DBCursor findPostsByDescending(int limit){
         DBObject sortQuery = new BasicDBObject("dateTime", -1);
-        DBCursor cursor = postCollection.find().sort(sortQuery).limit(limit);
-        return cursor;
+        return postCollection.find().sort(sortQuery).limit(limit);
     }
 
     public DBCursor findPostsByTagDesc(String tag, int limit){
         DBObject sortQuery = new BasicDBObject("dateTime", -1);
         DBObject query = new BasicDBObject("tags", tag);
-        DBCursor cursor = postCollection.find(query).sort(sortQuery).limit(limit);
-        return cursor;
+        return postCollection.find(query).sort(sortQuery).limit(limit);
     }
 
     public DBObject findByPermalink(String permalink){
