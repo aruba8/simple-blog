@@ -5,6 +5,7 @@ import blog.logic.Translit;
 import com.mongodb.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.bson.types.ObjectId;
 
 import java.util.Date;
 
@@ -66,6 +67,23 @@ public class PostsDAO {
         }
     }
 
+    public String updatePost(String id, Post post) {
+        DBObject findQuery = new BasicDBObject("_id", new ObjectId(id));
+        BasicDBObject subUpdateQuery = new BasicDBObject()
+                .append("title", post.getTitle())
+                .append("articleBody", post.getArticleBody())
+                .append("updatedTime", new Date());
+
+        if (post.getTags() != null) {
+            String[] tags = post.getTags();
+            subUpdateQuery.append("tags", tags);
+        }
+
+        DBObject updateQuery = new BasicDBObject("$set", subUpdateQuery);
+
+        postCollection.update(findQuery, updateQuery);
+        return (String) postCollection.findOne(new BasicDBObject("_id", new ObjectId(id))).get("permalink");
+    }
 }
 
 

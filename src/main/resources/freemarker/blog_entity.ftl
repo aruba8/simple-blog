@@ -13,7 +13,8 @@
 
 <div id="content">
 
-<div class="date">${post["dateTime"]}</div>
+<div class="date">${post["dateTime"]}<#if admin ??><a class="edit" href="/edit/${post["permalink"]}"> edit</a></#if></div>
+
 <div class="title">${post["title"]}</div>
     <ul class="post-info">
     <#if post.tags ??>

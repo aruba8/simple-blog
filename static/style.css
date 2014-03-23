@@ -145,3 +145,6 @@ ul.post-info {
     margin: 0 auto;
 }
 
+a.edit {
+    color: red;
+}

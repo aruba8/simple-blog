@@ -1,9 +1,6 @@
 package blog;
 
-import blog.routes.AddPostRoute;
-import blog.routes.CategoriesRoute;
-import blog.routes.LoginRoute;
-import blog.routes.MainPageRoute;
+import blog.routes.*;
 import com.mongodb.DB;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
@@ -40,11 +37,13 @@ public class BlogController {
         AddPostRoute addPostRoute = new AddPostRoute(cfg, blogDB);
         LoginRoute loginRoute = new LoginRoute(cfg, blogDB);
         CategoriesRoute categoriesRoute = new CategoriesRoute(cfg, blogDB);
+        EditPostRoute editPostRoute = new EditPostRoute(cfg, blogDB);
 
         mainPageRoute.initMainPage();
         categoriesRoute.initPage();
         addPostRoute.initPage();
         loginRoute.initPage();
+        editPostRoute.initPage();
 
     }
 
