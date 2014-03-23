@@ -7,11 +7,9 @@ import java.io.FileNotFoundException;
 import java.util.Map;
 
 public class ConfigParser {
-
     private String blogName;
-
-
     private String disqusShortName;
+    private String [] pages;
 
 
     public ConfigParser(){
@@ -21,6 +19,9 @@ public class ConfigParser {
             yaml = (Map)rawYaml.load(new FileInputStream(new File("config.yml")));
             this.blogName = (String) yaml.get("blog-name");
             this.disqusShortName = (String) yaml.get("disqus-short-name");
+            Map navbar = (Map)yaml.get("navbar");
+            String rawPages = (String)navbar.get("pages");
+            this.pages = rawPages.split(",");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -33,5 +34,9 @@ public class ConfigParser {
 
     public String getBlogName() {
         return blogName;
+    }
+
+    public String[] getPages() {
+        return pages;
     }
 }

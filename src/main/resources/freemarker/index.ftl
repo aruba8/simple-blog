@@ -9,15 +9,6 @@
 </head>
 <body>
 <div id="header"><h1><a href="/">${blogName}</a></h1></div>
-<div id="nav">
-    <ul>
-        <li>Blog</li>
-        <li>//</li>
-        <li>About</li>
-        <li>//</li>
-        <li>Links</li>
-    </ul>
-</div>
 <div id="content">
 <#list posts as post>
     <h3><a href="/post/${post["permalink"]}">${post["title"]}</a></h3>

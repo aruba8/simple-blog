@@ -16,9 +16,8 @@ public class PostsDAO {
         postCollection = blogDB.getCollection("posts");
     }
 
-    public void insertPost(Post post){
+    public Boolean insertPost(Post post){
         String permalink = createPermalink(post.getTitle());
-
         BasicDBObject queryToInsertPost = new BasicDBObject("dateTime", new Date())
                 .append("title", post.getTitle())
                 .append("articleBody", post.getArticleBody())
@@ -29,7 +28,13 @@ public class PostsDAO {
             queryToInsertPost.append("tags", tags);
         }
 
-        postCollection.insert(queryToInsertPost);
+        try {
+            postCollection.insert(queryToInsertPost);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
 
     }
 

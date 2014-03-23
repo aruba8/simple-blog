@@ -4,3 +4,6 @@ blogger:
   name: erik
 
 disqus-short-name: simples-blog
+
+navbar:
+  pages: Blog, About, Links

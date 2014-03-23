@@ -2,24 +2,29 @@ package blog.dao;
 
 import blog.logic.Post;
 import com.mongodb.BasicDBObject;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PostsDAOTest {
+
+
     PostsDAO postsDAOmock = mock(PostsDAO.class);
 
     @Test
     public void testInsertPost() {
         Post post = new Post();
         post.setArticleBody("Test");
+        post.setTitle("Test title");
+        post.setPermalink("test-title");
+
+        when(postsDAOmock.insertPost(post)).thenReturn(true);
+        assertThat(postsDAOmock.insertPost(post), equalTo(true));
     }
 
-    @Test
-    public void testFindPostsByDescending() {
-
-    }
 
     @Test
     public void testFindByPermalink() {
