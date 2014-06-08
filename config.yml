@@ -7,3 +7,6 @@ disqus-short-name: simples-blog
 
 navbar:
   pages: Blog, About, Links
+
+settings:
+  session-max-age: 14000

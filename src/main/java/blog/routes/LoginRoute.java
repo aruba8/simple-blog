@@ -3,6 +3,7 @@ package blog.routes;
 import blog.BlogController;
 import blog.dao.SessionDAO;
 import blog.dao.UserDAO;
+import blog.logic.ConfigParser;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
 import freemarker.template.Configuration;
@@ -26,6 +27,7 @@ public class LoginRoute extends BaseRoute{
     private Configuration cfg;
     private UserDAO userDAO;
     private SessionDAO sessionDAO;
+    private ConfigParser configParser;
 
     Logger logger = LogManager.getLogger(LoginRoute.class.getName());
 
@@ -33,6 +35,7 @@ public class LoginRoute extends BaseRoute{
         this.cfg = cfg;
         this.userDAO = new UserDAO(blogDB);
         this.sessionDAO = new SessionDAO(blogDB);
+        this.configParser = new ConfigParser();
     }
 
     public void initPage() throws IOException{
@@ -71,7 +74,9 @@ public class LoginRoute extends BaseRoute{
                         logger.info("User " + username + " authorized");
                         // set the cookie for the user's browser
                         Cookie cookie = new Cookie("session", sessionID);
-                        cookie.setMaxAge(14400);
+                        //read session max age
+                        int sessionTime = configParser.getSessionMaxAge();
+                        cookie.setMaxAge(sessionTime);
                         response.raw().addCookie(cookie);
                         response.redirect("/addpost");
                     }
