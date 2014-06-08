@@ -17,7 +17,9 @@
     <textarea id="article-body" name="articleBody">
 Title:
 Categories:
+Comments:
 ~~~~~~~~~~~~~~
+
 </textarea>
     <input type="submit" name="submit" value="submit" />
 </form>

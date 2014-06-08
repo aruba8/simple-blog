@@ -16,41 +16,23 @@ public class PostHandler {
     private static Logger logger = LogManager.getLogger(PostHandler.class.getName());
 
     public static Map<String, Object> getPost(DBObject postObject) {
-        Post post = new Post();
         Date dateTime = (Date) postObject.get("dateTime");
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.YYYY HH:mm");
-        post.setDate(sdf.format(dateTime));
-
-        String title = (String) postObject.get("title");
-        post.setTitle(title);
-
-        String articleBody = (String) postObject.get("articleBody");
-        post.setArticleBody(articleBody);
-
-        String permalink = (String) postObject.get("permalink");
-        post.setPermalink(permalink);
-
         BasicDBList tags = (BasicDBList) postObject.get("tags");
-
-        try {
-            post.setArticlePreview(createArticlePreview(post.getArticleBody()));
-        } catch (IOException e) {
-            e.printStackTrace();
+        Boolean isCommentsAvailable = true;
+        if (postObject.containsField("isCommentsAvailable")){
+            isCommentsAvailable = (Boolean)postObject.get("isCommentsAvailable");
         }
-
-        logger.debug(post.getArticleBody());
-
-
         Map<String, Object> postEntity = new HashMap<String, Object>();
-
         try {
-            String htmlArticle = new Markdown4jProcessor().process(post.getArticleBody());
+            String htmlArticle = new Markdown4jProcessor().process((String) postObject.get("articleBody"));
 
-            postEntity.put("dateTime", post.getDate());
-            postEntity.put("title", post.getTitle());
+            postEntity.put("dateTime", sdf.format(dateTime));
+            postEntity.put("title", postObject.get("title"));
             postEntity.put("articleBody", htmlArticle);
-            postEntity.put("permalink", post.getPermalink());
-            postEntity.put("articlePreview", post.getArticlePreview());
+            postEntity.put("permalink", postObject.get("permalink"));
+            postEntity.put("articlePreview", createArticlePreview((String) postObject.get("articleBody")));
+            postEntity.put("isCommentsAvailable", isCommentsAvailable);
             if(tags != null){
                 postEntity.put("tags", tags.toArray());
             }
@@ -64,18 +46,14 @@ public class PostHandler {
 
     private static String createArticlePreview(String article) throws IOException {
         if (article.length() > 600) {
-//            logger.warn(article);
-            String htmlPreview = new Markdown4jProcessor().process(article.substring(0, 600));
-//            logger.warn(htmlPreview);
-
-            return htmlPreview;
+            return new Markdown4jProcessor().process(article.substring(0, 600));
         } else {
             return new Markdown4jProcessor().process(article);
         }
     }
 
 
-    public static Post preparePost(String rawPost) throws Exception {
+    public static Post preparePost2(String rawPost) throws Exception {
         String splitRawPost[] = rawPost.split("~~~~~~~~~~~~~~");
         String head = splitRawPost[0];
         head = head.replaceAll("\n|\r\n", "");
@@ -97,6 +75,34 @@ public class PostHandler {
         post.setTitle(title.trim());
         post.setTags(categories);
         logger.debug(post.getArticleBody());
+        return post;
+    }
+
+    public static Post preparePost(String rawPost){
+        String splitRawPost [] = rawPost.split("~~~~~~~~~~~~~~");
+        String head = splitRawPost[0];
+        String body = splitRawPost[1];
+        String title = "";
+        String categories;
+        String isCommentsAvailable = "";
+        String [] categoriesArray = null;
+
+        String splitHead [] = head.split("\n|\r\n");
+        for (String aSplitHead : splitHead) {
+            if (aSplitHead.startsWith("Title:")) {
+                title = aSplitHead.replace("Title:", "").trim();
+            } else if (aSplitHead.startsWith("Categories")) {
+                categories = aSplitHead.replace("Categories:", "").trim().replaceAll("\\s", "");
+                categoriesArray = categories.split(",");
+            } else if (aSplitHead.startsWith("Comments:")) {
+                isCommentsAvailable = aSplitHead.replace("Comments:", "").toLowerCase().trim();
+            }
+        }
+        Post post = new Post();
+        post.setTitle(title);
+        post.setArticleBody(body);
+        post.setIsCommentsAvailable(Boolean.parseBoolean(isCommentsAvailable));
+        post.setTags(categoriesArray);
         return post;
     }
 }

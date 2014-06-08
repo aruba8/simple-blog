@@ -7,6 +7,7 @@ public class Post {
     private String permalink;
     private String articlePreview;
     private String [] tags;
+    private Boolean isCommentsAvailable;
 
     public String getDate() {
         return date;
@@ -54,5 +55,13 @@ public class Post {
 
     public void setTags(String[] tags) {
         this.tags = tags;
+    }
+
+    public Boolean getIsCommentsAvailable() {
+        return isCommentsAvailable;
+    }
+
+    public void setIsCommentsAvailable(Boolean isCommentsAvailable) {
+        this.isCommentsAvailable = isCommentsAvailable;
     }
 }

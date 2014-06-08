@@ -3,16 +3,12 @@ package blog.dao;
 import blog.logic.Post;
 import blog.logic.Translit;
 import com.mongodb.*;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
 
 import java.util.Date;
 
 public class PostsDAO {
     private DBCollection postCollection;
-    private Logger logger = LogManager.getLogger(PostsDAO.class.getName());
-
     public PostsDAO(final DB blogDB){
         postCollection = blogDB.getCollection("posts");
     }
@@ -22,7 +18,8 @@ public class PostsDAO {
         BasicDBObject queryToInsertPost = new BasicDBObject("dateTime", new Date())
                 .append("title", post.getTitle())
                 .append("articleBody", post.getArticleBody())
-                .append("permalink", permalink);
+                .append("permalink", permalink)
+                .append("isCommentsAvailable", post.getIsCommentsAvailable());
 
         if (post.getTags() != null) {
             String[] tags = post.getTags();
@@ -72,7 +69,8 @@ public class PostsDAO {
         BasicDBObject subUpdateQuery = new BasicDBObject()
                 .append("title", post.getTitle())
                 .append("articleBody", post.getArticleBody())
-                .append("updatedTime", new Date());
+                .append("updatedTime", new Date())
+                .append("isCommentsAvailable", post.getIsCommentsAvailable());
 
         if (post.getTags() != null) {
             String[] tags = post.getTags();

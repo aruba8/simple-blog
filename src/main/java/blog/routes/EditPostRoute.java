@@ -58,6 +58,10 @@ public class EditPostRoute extends BaseRoute {
                 } else {
                     SimpleHash root = new SimpleHash();
                     BasicDBList tags = (BasicDBList) post.get("tags");
+                    Boolean isCommentsAvailable = true;
+                    if (post.containsField("isCommentsAvailable")){
+                        isCommentsAvailable = (Boolean) post.get("isCommentsAvailable");
+                    }
                     if(tags != null){
                         String tagsStringRaw = "";
                         for(Object tag : tags){
@@ -67,8 +71,7 @@ public class EditPostRoute extends BaseRoute {
                         logger.info(tagsString);
                         root.put("tags", tagsString);
                     }
-
-
+                    root.put("isCommentsAvailable", isCommentsAvailable.toString());
                     root.put("post", post);
                     template.process(root, writer);
                 }

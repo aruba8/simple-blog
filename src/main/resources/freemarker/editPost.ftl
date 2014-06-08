@@ -17,9 +17,9 @@
     <textarea id="article-body" name="articleBody">
 Title: ${post["title"]}
 Categories: <#if tags ??>${tags}</#if>
+Comments: <#if isCommentsAvailable ??>${isCommentsAvailable}</#if>
 ~~~~~~~~~~~~~~
-${post["articleBody"]}
-    </textarea>
+${post["articleBody"]}</textarea>
     <input type="submit" name="submit" value="submit" />
 </form>
 
