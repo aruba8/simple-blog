@@ -1,9 +1,9 @@
-blog-name: Blog
+java.blog-name: Blog
 
 blogger:
   name: erik
 
-disqus-short-name: simples-blog
+disqus-short-name: simples-java.blog
 
 navbar:
   pages: Blog, About, Links

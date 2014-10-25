@@ -1,86 +1,50 @@
 package blog.dao;
 
-import blog.logic.Post;
-import blog.logic.Translit;
-import com.mongodb.*;
+import blog.models.Post;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bson.types.ObjectId;
+import org.mongodb.morphia.Datastore;
 
 import java.util.Date;
+import java.util.List;
 
 public class PostsDAO {
-    private DBCollection postCollection;
-    public PostsDAO(final DB blogDB){
-        postCollection = blogDB.getCollection("posts");
+    private Datastore ds;
+    public PostsDAO(Datastore ds){this.ds = ds;}
+    Logger logger = LogManager.getLogger(PostsDAO.class.getName());
+
+
+
+    public void insertPost(Post post){
+        logger.debug(post);
+        ds.save(post);
     }
 
-    public Boolean insertPost(Post post){
-        String permalink = createPermalink(post.getTitle());
-        BasicDBObject queryToInsertPost = new BasicDBObject("dateTime", new Date())
-                .append("title", post.getTitle())
-                .append("articleBody", post.getArticleBody())
-                .append("permalink", permalink)
-                .append("isCommentsAvailable", post.getIsCommentsAvailable());
-
-        if (post.getTags() != null) {
-            String[] tags = post.getTags();
-            queryToInsertPost.append("tags", tags);
-        }
-
-        try {
-            postCollection.insert(queryToInsertPost);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-
+    public List<Post> findPostsByDescending(int limit){
+        return ds.find(Post.class).order("-dateTime").limit(limit).asList();
     }
 
-    public DBCursor findPostsByDescending(int limit){
-        DBObject sortQuery = new BasicDBObject("dateTime", -1);
-        return postCollection.find().sort(sortQuery).limit(limit);
+    public List<Post> findPostsByTagDesc(String tag, int limit){
+        return ds.find(Post.class).field("tags").contains(tag).order("-dateTime").limit(limit).asList();
     }
 
-    public DBCursor findPostsByTagDesc(String tag, int limit){
-        DBObject sortQuery = new BasicDBObject("dateTime", -1);
-        DBObject query = new BasicDBObject("tags", tag);
-        return postCollection.find(query).sort(sortQuery).limit(limit);
+    public Post findByPermalink(String permalink){
+        return  ds.find(Post.class).field("permalink").equal(permalink).get();
     }
 
-    public DBObject findByPermalink(String permalink){
-        DBObject query = new BasicDBObject("permalink", permalink);
-        return postCollection.findOne(query);
-    }
-
-    private String createPermalink(String title){
-        String titleInTranslit = Translit.toTranslit(title);
-        String permalink = titleInTranslit.replaceAll("\\s", "-");
-        permalink = permalink.replaceAll("\\W", "-");
-        permalink = permalink.toLowerCase();
-        if (permalink.length() > 60) {
-            return permalink.substring(0, 60);
-        } else {
-            return permalink;
-        }
-    }
 
     public String updatePost(String id, Post post) {
-        DBObject findQuery = new BasicDBObject("_id", new ObjectId(id));
-        BasicDBObject subUpdateQuery = new BasicDBObject()
-                .append("title", post.getTitle())
-                .append("articleBody", post.getArticleBody())
-                .append("updatedTime", new Date())
-                .append("isCommentsAvailable", post.getIsCommentsAvailable());
 
-        if (post.getTags() != null) {
-            String[] tags = post.getTags();
-            subUpdateQuery.append("tags", tags);
-        }
+        ds.update(ds.find(Post.class).field("id").equal(new ObjectId(id)), ds.createUpdateOperations(Post.class).
+                set("title", post.getTitle()).
+                set("articleBody", post.getArticleBody()).
+                add("updatedTime", new Date()).
+                set("isCommentsAvailable", post.getIsCommentsAvailable()).
+                set("tags", post.getTags()));
 
-        DBObject updateQuery = new BasicDBObject("$set", subUpdateQuery);
-
-        postCollection.update(findQuery, updateQuery);
-        return (String) postCollection.findOne(new BasicDBObject("_id", new ObjectId(id))).get("permalink");
+        Post postFound = ds.find(Post.class).field("id").equal(new ObjectId(id)).get();
+        return postFound.getPermalink();
     }
 }
 

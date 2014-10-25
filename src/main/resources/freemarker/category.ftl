@@ -25,6 +25,6 @@
 </div>
 
 
-<div class="copyright">by <a href="https://github.com/biomaks/simple-blog">Simple Blog</a> 2013</div>
+<div class="copyright">by <a href="https://github.com/biomaks/simple-java.blog">Simple Blog</a> 2013</div>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <suite name="TestSuite">
     <test name="unit">
         <packages>
-            <package name="blog.dao"/>
+            <package name="java.blog.dao"/>
         </packages>
     </test>
 </suite>
