@@ -1,11 +1,10 @@
 package blog.dao;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DB;
 import com.mongodb.DBCollection;
-import com.mongodb.DBObject;
 import org.apache.commons.codec.binary.Base64;
+import org.mongodb.morphia.Datastore;
 
+import blog.models.Session;
 import java.security.SecureRandom;
 
 /**
@@ -13,18 +12,19 @@ import java.security.SecureRandom;
  */
 public class SessionDAO {
     private DBCollection sessionsCollection;
+    private Datastore ds;
 
-    public SessionDAO(final DB blogDB) {
-        sessionsCollection = blogDB.getCollection("sessions");
+    public SessionDAO(final Datastore ds) {
+        this.ds = ds;
     }
 
     public String findUserNameBySessionId(String sessionId) {
-        DBObject session = getSession(sessionId);
+        Session session = getSession(sessionId);
 
         if (session == null) {
             return null;
         } else {
-            return session.get("username").toString();
+            return session.getUsername();
         }
     }
 
@@ -41,24 +41,30 @@ public class SessionDAO {
 
         String sessionID = encoder.encodeToString(randomBytes);
 
+        Session session = new Session();
+
         // build the BSON object
-        BasicDBObject session = new BasicDBObject("username", username);
+//        BasicDBObject session = new BasicDBObject("username", username);
+        session.setUsername(username);
 
-        session.append("_id", sessionID);
+        session.setId(sessionID);
 
-        sessionsCollection.insert(session);
+//        sessionsCollection.insert(session);
+        ds.save(session);
 
-        return session.getString("_id");
+        return session.getId();
     }
 
     // ends the session by deleting it from the sesisons table
     public void endSession(String sessionID) {
-        sessionsCollection.remove(new BasicDBObject("_id", sessionID));
+//        sessionsCollection.remove(new BasicDBObject("_id", sessionID));
+        ds.delete(ds.createQuery(Session.class).field("id").equal(sessionID));
     }
 
     // retrieves the session from the sessions table
-    public DBObject getSession(String sessionID) {
-        return sessionsCollection.findOne(new BasicDBObject("_id", sessionID));
+    public Session getSession(String sessionID) {
+//        return sessionsCollection.findOne(new BasicDBObject("_id", sessionID));
+        return ds.find(Session.class).field("id").equal(sessionID).get();
     }
 
 }

@@ -17,7 +17,7 @@ public class ConfigParser {
         Map yaml;
         try {
             yaml = (Map)rawYaml.load(new FileInputStream(new File("config.yml")));
-            this.blogName  = (String) yaml.get("blog-name");
+            this.blogName  = (String) yaml.get("java.blog-name");
             this.disqusShortName = (String) yaml.get("disqus-short-name");
             Map navbar = (Map)yaml.get("navbar");
             Map settings = (Map) yaml.get("settings");

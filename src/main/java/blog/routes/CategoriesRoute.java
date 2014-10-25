@@ -2,13 +2,13 @@ package blog.routes;
 
 import blog.dao.PostsDAO;
 import blog.logic.PostsHandler;
-import com.mongodb.DB;
-import com.mongodb.DBCursor;
+import blog.models.Post;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mongodb.morphia.Datastore;
 import spark.Request;
 import spark.Response;
 
@@ -23,10 +23,11 @@ public class CategoriesRoute extends BaseRoute{
     Logger logger = LogManager.getLogger(CategoriesRoute.class.getName());
     private Configuration cfg;
     private PostsDAO postsDAO;
+    private Datastore ds;
 
-    public CategoriesRoute(final Configuration cfg, final DB blogDB){
+    public CategoriesRoute(final Configuration cfg, final Datastore ds){
         this.cfg = cfg;
-        this.postsDAO = new PostsDAO(blogDB);
+        this.postsDAO = new PostsDAO(ds);
     }
 
     public void initPage()throws IOException{
@@ -36,7 +37,7 @@ public class CategoriesRoute extends BaseRoute{
                 logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
                 String tag = request.queryParams("c");
 
-                DBCursor postsCursor = postsDAO.findPostsByTagDesc(tag, 10);
+                List<Post> postsCursor = postsDAO.findPostsByTagDesc(tag, 10);
                 List<Map> posts = PostsHandler.getPostsList(postsCursor);
                 SimpleHash root = new SimpleHash();
 

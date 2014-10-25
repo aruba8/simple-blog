@@ -6,19 +6,20 @@ import blog.dao.SessionDAO;
 import blog.dao.UserDAO;
 import blog.logic.PostHandler;
 import blog.logic.PostsHandler;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
+import blog.models.Post;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mongodb.morphia.Datastore;
 import spark.Request;
 import spark.Response;
 
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URLDecoder;
+import java.util.List;
 import java.util.Map;
 
 import static spark.Spark.get;
@@ -32,11 +33,11 @@ public class MainPageRoute extends BaseRoute{
     private PostsDAO postsDAO;
     private UserDAO userDAO;
 
-    public MainPageRoute(final Configuration cfg, final DB blogDB) {
+    public MainPageRoute(final Configuration cfg, final Datastore ds) {
         this.cfg = cfg;
-        this.sessionDAO = new SessionDAO(blogDB);
-        this.postsDAO = new PostsDAO(blogDB);
-        this.userDAO = new UserDAO(blogDB);
+        this.sessionDAO = new SessionDAO(ds);
+        this.postsDAO = new PostsDAO(ds);
+        this.userDAO = new UserDAO(ds);
     }
 
 
@@ -45,9 +46,11 @@ public class MainPageRoute extends BaseRoute{
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
+                List<Post> posts = postsDAO.findPostsByDescending(10);
+                logger.info(PostsHandler.getPostsList(postsDAO.findPostsByDescending(10)));
                 SimpleHash root = new SimpleHash();
                 root.put("blogName", blogName);
-                root.put("posts", PostsHandler.getPostsList(postsDAO.findPostsByDescending(10)));
+                root.put("posts", PostsHandler.getPostsList(posts));
                 template.process(root, writer);
             }
         });
@@ -56,21 +59,21 @@ public class MainPageRoute extends BaseRoute{
             @Override
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 String permalink = URLDecoder.decode(request.params(":permalink"), "UTF-8");
-                DBObject postDBObject = postsDAO.findByPermalink(permalink);
+                Post postObject = postsDAO.findByPermalink(permalink);
                 String cookie = BlogController.getSessionCookie(request);
                 String username = sessionDAO.findUserNameBySessionId(cookie);
                 Boolean isAdmin = userDAO.isAdminByUsername(username);
                 logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
 
 
-                if (postDBObject == null) {
+                if (postObject == null) {
                     response.redirect("/post_not_found");
                 } else {
                     SimpleHash root = new SimpleHash();
                     root.put("diqusShortName", configParser.getDisqusShortName());
                     root.put("blogName", blogName);
 
-                    Map post = PostHandler.getPost(postDBObject);
+                    Map post = PostHandler.getPost(postObject);
                     logger.debug(post.get("articleBody"));
 
                     if (isAdmin) {

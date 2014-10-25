@@ -1,7 +1,6 @@
 package blog.logic;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.DBObject;
+import blog.models.Post;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.markdown4j.Markdown4jProcessor;
@@ -15,33 +14,33 @@ import java.util.Map;
 public class PostHandler {
     private static Logger logger = LogManager.getLogger(PostHandler.class.getName());
 
-    public static Map<String, Object> getPost(DBObject postObject) {
-        Date dateTime = (Date) postObject.get("dateTime");
+    public static Map<String, Object> getPost(Post post) {
+        Date dateTime = post.getDateTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.YYYY HH:mm");
-        BasicDBList tags = (BasicDBList) postObject.get("tags");
+        String [] tags = post.getTags();
         Boolean isCommentsAvailable = true;
-        if (postObject.containsField("isCommentsAvailable")){
-            isCommentsAvailable = (Boolean)postObject.get("isCommentsAvailable");
+        if (post.getIsCommentsAvailable() != null){
+            isCommentsAvailable = post.getIsCommentsAvailable();
         }
-        Map<String, Object> postEntity = new HashMap<String, Object>();
+        Map<String, Object> postMap = new HashMap<String, Object>();
         try {
-            String htmlArticle = new Markdown4jProcessor().process((String) postObject.get("articleBody"));
+            String htmlArticle = new Markdown4jProcessor().process(post.getArticleBody());
 
-            postEntity.put("dateTime", sdf.format(dateTime));
-            postEntity.put("title", postObject.get("title"));
-            postEntity.put("articleBody", htmlArticle);
-            postEntity.put("permalink", postObject.get("permalink"));
-            postEntity.put("articlePreview", createArticlePreview((String) postObject.get("articleBody")));
-            postEntity.put("isCommentsAvailable", isCommentsAvailable);
+            postMap.put("dateTime", sdf.format(dateTime));
+            postMap.put("title", post.getTitle());
+            postMap.put("articleBody", htmlArticle);
+            postMap.put("permalink", post.getPermalink());
+            postMap.put("articlePreview", createArticlePreview(post.getArticleBody()));
+            postMap.put("isCommentsAvailable", isCommentsAvailable);
             if(tags != null){
-                postEntity.put("tags", tags.toArray());
+                postMap.put("tags", tags);
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        return postEntity;
+        return postMap;
     }
 
     private static String createArticlePreview(String article) throws IOException {
@@ -52,34 +51,8 @@ public class PostHandler {
         }
     }
 
-
-    public static Post preparePost2(String rawPost) throws Exception {
-        String splitRawPost[] = rawPost.split("~~~~~~~~~~~~~~");
-        String head = splitRawPost[0];
-        head = head.replaceAll("\n|\r\n", "");
-        String body = splitRawPost[1];
-        String[] splitHead = head.split("Categories:");
-        String title = splitHead[0].substring(6, splitHead[0].length());
-        if (title.length() < 5){
-            throw new Exception("Title is less than 5 characters");
-        }
-        String [] categories = null;
-        if (splitHead.length > 1) {
-            String categoriesString = splitHead[1];
-            categoriesString = categoriesString.trim();
-            categories = categoriesString.split(", ");
-        }
-
-        Post post = new Post();
-        post.setArticleBody(body.trim());
-        post.setTitle(title.trim());
-        post.setTags(categories);
-        logger.debug(post.getArticleBody());
-        return post;
-    }
-
     public static Post preparePost(String rawPost){
-        String splitRawPost [] = rawPost.split("~~~~~~~~~~~~~~");
+        String splitRawPost [] = rawPost.split("~~~~~~~~~~~~~~\n");
         String head = splitRawPost[0];
         String body = splitRawPost[1];
         String title = "";
@@ -99,10 +72,25 @@ public class PostHandler {
             }
         }
         Post post = new Post();
+        post.setDateTime(new Date());
         post.setTitle(title);
         post.setArticleBody(body);
         post.setIsCommentsAvailable(Boolean.parseBoolean(isCommentsAvailable));
         post.setTags(categoriesArray);
+        post.setPermalink(createPermalink(title));
         return post;
     }
+
+    public static String createPermalink(String title){
+        String titleInTranslit = Translit.toTranslit(title);
+        String permalink = titleInTranslit.replaceAll("\\s", "-");
+        permalink = permalink.replaceAll("\\W", "-");
+        permalink = permalink.toLowerCase();
+        if (permalink.length() > 60) {
+            return permalink.substring(0, 60);
+        } else {
+            return permalink;
+        }
+    }
+
 }

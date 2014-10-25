@@ -1,9 +1,11 @@
 package blog.dao;
 
+import blog.models.User;
 import com.mongodb.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mongodb.morphia.Datastore;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -15,31 +17,33 @@ import java.util.Random;
  * author: erik
  */
 public class UserDAO {
-    private final DBCollection usersCollection;
+//    private DBCollection usersCollection = null;
+    private Datastore ds;
+
     private Random random = new SecureRandom();
 
     Logger logger = LogManager.getLogger(UserDAO.class.getName());
 
-    public UserDAO(final DB moneyDB) {
-        usersCollection = moneyDB.getCollection("users");
-    }
+    public UserDAO(Datastore ds) {this.ds = ds;}
 
     // validates that username is unique and insert into db
     public boolean addUser(String username, String password, String email, Boolean isAdmin) {
 
         String passwordHash = makePasswordHash(password, Integer.toString(random.nextInt()));
 
-        BasicDBObject user = new BasicDBObject();
+        User user_m = new User();
 
-        user.append("username", username).append("password", passwordHash).append("isAdmin", isAdmin);
+        user_m.setUsername(username);
+        user_m.setPassword(passwordHash);
+        user_m.setIsAdmin(isAdmin);
 
         if (email != null && !email.equals("")) {
             // the provided email address
-            user.append("email", email);
+            user_m.setEmail(email);
         }
 
         try {
-            usersCollection.insert(user);
+            this.ds.save(user_m);
             return true;
         } catch (MongoException.DuplicateKey e) {
             logger.info("Username already in use: " + username);
@@ -47,17 +51,17 @@ public class UserDAO {
         }
     }
 
-    public DBObject validateLogin(String username, String password) {
-        DBObject user;
+    public User validateLogin(String username, String password) {
+        User user;
 
-        user = usersCollection.findOne(new BasicDBObject("username", username));
+        user = ds.find(User.class).field("username").equal(username).get();
 
         if (user == null) {
             logger.info("User not in database");
             return null;
         }
 
-        String hashedAndSalted = user.get("password").toString();
+        String hashedAndSalted = user.getPassword();
 
         String salt = hashedAndSalted.split(",")[1];
 
@@ -85,21 +89,16 @@ public class UserDAO {
         }
     }
 
-
     public String getUserIdByUsername(String username) {
-
-
         return null;
     }
 
     public Boolean isAdminByUsername(String username) {
-        DBObject query = new BasicDBObject("username", username);
-
-        DBObject user = usersCollection.findOne(query);
+        User user = ds.find(User.class).field("username").equal(username).get();
         if (user == null) {
             return false;
         } else {
-            return (Boolean) user.get("isAdmin");
+            return user.getIsAdmin();
         }
     }
 }

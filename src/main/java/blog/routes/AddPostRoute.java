@@ -4,12 +4,12 @@ import blog.BlogController;
 import blog.dao.PostsDAO;
 import blog.dao.SessionDAO;
 import blog.logic.PostHandler;
-import com.mongodb.DB;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mongodb.morphia.Datastore;
 import spark.Request;
 import spark.Response;
 
@@ -27,10 +27,10 @@ public class AddPostRoute extends BaseRoute{
     private PostsDAO postsDAO;
     private SessionDAO sessionDAO;
 
-    public AddPostRoute(final Configuration cfg, final DB blogDB) {
+    public AddPostRoute(final Configuration cfg, final Datastore ds) {
         this.cfg = cfg;
-        postsDAO = new PostsDAO(blogDB);
-        sessionDAO = new SessionDAO(blogDB);
+        postsDAO = new PostsDAO(ds);
+        sessionDAO = new SessionDAO(ds);
     }
 
     public void initPage() throws IOException {

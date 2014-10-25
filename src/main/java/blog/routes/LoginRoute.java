@@ -4,14 +4,14 @@ import blog.BlogController;
 import blog.dao.SessionDAO;
 import blog.dao.UserDAO;
 import blog.logic.ConfigParser;
-import com.mongodb.DB;
-import com.mongodb.DBObject;
+import blog.models.User;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mongodb.morphia.Datastore;
 import spark.Request;
 import spark.Response;
 
@@ -31,10 +31,10 @@ public class LoginRoute extends BaseRoute{
 
     Logger logger = LogManager.getLogger(LoginRoute.class.getName());
 
-    public LoginRoute(final Configuration cfg, final DB blogDB){
+    public LoginRoute(final Configuration cfg, final Datastore ds){
         this.cfg = cfg;
-        this.userDAO = new UserDAO(blogDB);
-        this.sessionDAO = new SessionDAO(blogDB);
+        this.userDAO = new UserDAO(ds);
+        this.sessionDAO = new SessionDAO(ds);
         this.configParser = new ConfigParser();
     }
 
@@ -63,10 +63,10 @@ public class LoginRoute extends BaseRoute{
                 logger.info(request.requestMethod()+" "+request.headers("Referer"));
 
                 logger.info("Login: User submitted: " + username + "  " + "***********");
-                DBObject user = userDAO.validateLogin(username, password);
+                User user = userDAO.validateLogin(username, password);
                 if (user != null) {
                     // valid user, let's log them in
-                    String sessionID = sessionDAO.startSession(user.get("username").toString());
+                    String sessionID = sessionDAO.startSession(user.getUsername());
 
                     if (sessionID == null) {
                         response.redirect("/internal_error");
