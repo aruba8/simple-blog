@@ -1,29 +1,33 @@
 package blog.models;
 
 
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
+import javax.persistence.*;
 
-@Entity("sessions")
+@Entity
+@Table(name = "sessions")
 public class Session {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "username")
     private String username;
+    @Column(name = "sessions_string")
+    private String sessionString;
 
-
-    public void setId(String id) {
-        this.id = id;
+    public String getSessionString() {
+        return sessionString;
     }
-
+    public void setSessionString(String sessionString) {
+        this.sessionString = sessionString;
+    }
     public void setUsername(String username) {
         this.username = username;
     }
-
-    public String getId() {
-        return id;
-    }
-
     public String getUsername() {
         return username;
+    }
+
+    public long getId() {
+        return id;
     }
 }

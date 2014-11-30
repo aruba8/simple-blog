@@ -1,24 +1,38 @@
 package blog.models;
 
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Id;
-
+import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
-@Entity("posts")
+
+@Entity
+@Table(name = "posts")
 public class Post {
     @Id
-    private ObjectId id;
-    @Embedded
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "users_id", nullable = false)
     private User author;
-    private String date;
+    @Column(name = "title")
     private String title;
+    @Column(name = "articleBody")
     private String articleBody;
+    @Column(name = "permalink")
     private String permalink;
-    private String [] tags;
+    @ManyToMany(
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.REFRESH
+    )
+    @JoinTable(
+            name = "post_tag",
+            joinColumns={@JoinColumn(name = "post_id")},
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+    private Set<Tag> tags = new HashSet<Tag>();
+    @Column(name = "isCommentsAvailable")
     private Boolean isCommentsAvailable;
+    @Column(name = "datetime")
     private Date dateTime;
 
     @Override
@@ -34,9 +48,6 @@ public class Post {
         return author;
     }
 
-    public String getDate() {
-        return date;
-    }
 
     public String getArticleBody() {
         return articleBody;
@@ -54,7 +65,7 @@ public class Post {
         return permalink;
     }
 
-    public String[] getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 
@@ -70,7 +81,7 @@ public class Post {
         this.isCommentsAvailable = isCommentsAvailable;
     }
 
-    public void setTags(String[] tags) {
+    public void setTags(Set tags) {
         this.tags = tags;
     }
 
@@ -81,8 +92,21 @@ public class Post {
     public void setDateTime(Date date) {
         this.dateTime = date;
     }
-
-    public ObjectId getId() {
+    public Long getId() {
         return id;
+    }
+
+    public String [] getTagNames(){
+        String [] tagNames = new String[this.tags.size()];
+        int i = 0;
+        for(Tag tag : this.tags){
+            tagNames[i] = tag.getName();
+            i++;
+        }
+        return tagNames;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
     }
 }

@@ -3,7 +3,6 @@ package blog.routes;
 import blog.BlogController;
 import blog.dao.PostsDAO;
 import blog.dao.SessionDAO;
-import blog.dao.UserDAO;
 import blog.logic.PostHandler;
 import blog.models.Post;
 import freemarker.template.Configuration;
@@ -11,7 +10,7 @@ import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mongodb.morphia.Datastore;
+import org.hibernate.Session;
 import spark.Request;
 import spark.Response;
 
@@ -28,16 +27,14 @@ import static spark.Spark.post;
 public class EditPostRoute extends BaseRoute {
     private Configuration cfg;
     private SessionDAO sessionDAO;
-    private UserDAO userDAO;
     private PostsDAO postsDAO;
     Logger logger = LogManager.getLogger(MainPageRoute.class.getName());
 
 
-    public EditPostRoute(final Configuration cfg, final Datastore ds){
+    public EditPostRoute(final Configuration cfg, final Session session){
         this.cfg = cfg;
-        this.sessionDAO = new SessionDAO(ds);
-        this.userDAO = new UserDAO(ds);
-        this.postsDAO = new PostsDAO(ds);
+        this.sessionDAO = new SessionDAO(session);
+        this.postsDAO = new PostsDAO(session);
     }
 
     public void initPage() throws IOException {
@@ -48,17 +45,14 @@ public class EditPostRoute extends BaseRoute {
                 Post post = postsDAO.findByPermalink(permalink);
 
                 String cookie = BlogController.getSessionCookie(request);
-                String username = sessionDAO.findUserNameBySessionId(cookie);
-                Boolean isAdmin = userDAO.isAdminByUsername(username);
+                String username = sessionDAO.findUserNameBySessionString(cookie);
                 if (username == null){
                     response.redirect("/login");
-                } else if (!isAdmin){
-                    response.redirect("/");
                 } else if (post == null){
                     response.redirect("/page_not_found");
                 } else {
                     SimpleHash root = new SimpleHash();
-                    String [] tags = post.getTags();
+                    String [] tags = post.getTagNames();
                     Boolean isCommentsAvailable = true;
                     if (post.getIsCommentsAvailable() != null){
                         isCommentsAvailable = post.getIsCommentsAvailable();
@@ -93,7 +87,7 @@ public class EditPostRoute extends BaseRoute {
                     String id = request.queryParams("id");
                     logger.info(id);
                     //todo post doesn't work
-                    String postPermalink = postsDAO.updatePost(id, PostHandler.preparePost(articleBody));
+                    String postPermalink = postsDAO.updatePost(id, PostHandler.createPost(articleBody));
                     logger.info(postPermalink);
                     response.redirect("/post/"+postPermalink);
                 } catch (Exception e) {

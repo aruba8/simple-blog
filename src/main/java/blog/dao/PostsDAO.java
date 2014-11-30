@@ -3,49 +3,59 @@ package blog.dao;
 import blog.models.Post;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.bson.types.ObjectId;
-import org.mongodb.morphia.Datastore;
+import org.hibernate.Session;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
-import java.util.Date;
 import java.util.List;
 
 public class PostsDAO {
-    private Datastore ds;
-    public PostsDAO(Datastore ds){this.ds = ds;}
+    private Session hibernateSession;
+    public PostsDAO(Session session){this.hibernateSession = session;}
     Logger logger = LogManager.getLogger(PostsDAO.class.getName());
 
 
 
     public void insertPost(Post post){
-        logger.debug(post);
-        ds.save(post);
+        hibernateSession.getTransaction().begin();
+        hibernateSession.save(post);
+        hibernateSession.getTransaction().commit();
     }
 
     public List<Post> findPostsByDescending(int limit){
-        return ds.find(Post.class).order("-dateTime").limit(limit).asList();
+        return hibernateSession.createCriteria(Post.class).addOrder(Order.desc("dateTime")).setMaxResults(limit).list();
     }
 
-    public List<Post> findPostsByTagDesc(String tag, int limit){
-        return ds.find(Post.class).field("tags").contains(tag).order("-dateTime").limit(limit).asList();
+    public List<Post> findPostsByTagDesc(String tagName, int limit){
+        hibernateSession.getTransaction().begin();
+        String hql = "select p from Post as p inner join p.tags as t where t.name = ?";
+        List<Post> posts = hibernateSession.createQuery(hql).setString(0, tagName).setMaxResults(limit).list();
+        hibernateSession.getTransaction().commit();
+        return posts;
     }
 
     public Post findByPermalink(String permalink){
-        return  ds.find(Post.class).field("permalink").equal(permalink).get();
+        return (Post) hibernateSession.createCriteria(Post.class).add(Restrictions.eq("permalink", permalink)).uniqueResult();
     }
 
 
     public String updatePost(String id, Post post) {
+        hibernateSession.getTransaction().begin();
+        Post updPost = (Post) hibernateSession.get(Post.class, id);
 
-        ds.update(ds.find(Post.class).field("id").equal(new ObjectId(id)), ds.createUpdateOperations(Post.class).
-                set("title", post.getTitle()).
-                set("articleBody", post.getArticleBody()).
-                add("updatedTime", new Date()).
-                set("isCommentsAvailable", post.getIsCommentsAvailable()).
-                set("tags", post.getTags()));
+        updPost.setArticleBody(post.getArticleBody());
+        updPost.setTitle(post.getTitle());
+        updPost.setDateTime(post.getDateTime());
+        updPost.setIsCommentsAvailable(post.getIsCommentsAvailable());
+        updPost.setTags(post.getTags());
+        updPost.setPermalink(post.getPermalink());
 
-        Post postFound = ds.find(Post.class).field("id").equal(new ObjectId(id)).get();
-        return postFound.getPermalink();
+        hibernateSession.update(updPost);
+        hibernateSession.getTransaction().commit();
+        return updPost.getPermalink();
     }
+
+
 }
 
 

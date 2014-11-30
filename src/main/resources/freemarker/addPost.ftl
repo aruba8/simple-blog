@@ -17,7 +17,7 @@
     <textarea id="article-body" name="articleBody">
 Title:
 Categories:
-Comments:
+Comments:true
 ~~~~~~~~~~~~~~
 
 </textarea>

@@ -8,7 +8,7 @@ import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mongodb.morphia.Datastore;
+import org.hibernate.Session;
 import spark.Request;
 import spark.Response;
 
@@ -23,11 +23,10 @@ public class CategoriesRoute extends BaseRoute{
     Logger logger = LogManager.getLogger(CategoriesRoute.class.getName());
     private Configuration cfg;
     private PostsDAO postsDAO;
-    private Datastore ds;
 
-    public CategoriesRoute(final Configuration cfg, final Datastore ds){
+    public CategoriesRoute(final Configuration cfg, final Session session){
         this.cfg = cfg;
-        this.postsDAO = new PostsDAO(ds);
+        this.postsDAO = new PostsDAO(session);
     }
 
     public void initPage()throws IOException{

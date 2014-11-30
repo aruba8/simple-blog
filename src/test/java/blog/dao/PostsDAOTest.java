@@ -29,8 +29,6 @@ public class PostsDAOTest {
         post2.setDateTime(new Date());
         post.setArticleBody("qweqweqweqweqweqweqw");
         post2.setArticleBody("ertertertertertertert");
-        post.setTags(new String[]{"aaa", "bbb"});
-        post2.setTags(new String[]{"ccc", "bbb"});
         List<Post> postList = new ArrayList<Post>();
         postList.add(post);
         postList.add(post2);

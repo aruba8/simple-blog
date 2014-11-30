@@ -1,11 +1,11 @@
 package blog.dao;
 
 import blog.models.User;
-import com.mongodb.*;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mongodb.morphia.Datastore;
+import org.hibernate.HibernateException;
+import org.hibernate.criterion.Restrictions;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
@@ -17,51 +17,38 @@ import java.util.Random;
  * author: erik
  */
 public class UserDAO {
-//    private DBCollection usersCollection = null;
-    private Datastore ds;
-
     private Random random = new SecureRandom();
-
     Logger logger = LogManager.getLogger(UserDAO.class.getName());
+    org.hibernate.Session hibernateSession;
 
-    public UserDAO(Datastore ds) {this.ds = ds;}
+    public UserDAO(org.hibernate.Session session) {this.hibernateSession = session;}
 
     // validates that username is unique and insert into db
-    public boolean addUser(String username, String password, String email, Boolean isAdmin) {
-
+    public Boolean addUser(String username, String password, String email) {
         String passwordHash = makePasswordHash(password, Integer.toString(random.nextInt()));
-
-        User user_m = new User();
-
-        user_m.setUsername(username);
-        user_m.setPassword(passwordHash);
-        user_m.setIsAdmin(isAdmin);
-
-        if (email != null && !email.equals("")) {
-            // the provided email address
-            user_m.setEmail(email);
-        }
+        User user = new User(username, passwordHash, email);
+        System.out.println(username+":"+password+":"+email);
 
         try {
-            this.ds.save(user_m);
+            hibernateSession.getTransaction().begin();
+            hibernateSession.persist(user);
+            hibernateSession.getTransaction().commit();
             return true;
-        } catch (MongoException.DuplicateKey e) {
+        } catch (HibernateException e) {
             logger.info("Username already in use: " + username);
+            e.printStackTrace();
             return false;
         }
     }
 
     public User validateLogin(String username, String password) {
-        User user;
-
-        user = ds.find(User.class).field("username").equal(username).get();
-
+        User user = (User) hibernateSession.createCriteria(User.class).add(Restrictions.eq("username", username)).uniqueResult();
         if (user == null) {
             logger.info("User not in database");
             return null;
         }
-
         String hashedAndSalted = user.getPassword();
+        logger.info("User found");
 
         String salt = hashedAndSalted.split(",")[1];
 
@@ -69,10 +56,8 @@ public class UserDAO {
             logger.info("Submitted password is not a match");
             return null;
         }
-
         return user;
     }
-
 
     private String makePasswordHash(String password, String salt) {
         try {
@@ -91,14 +76,5 @@ public class UserDAO {
 
     public String getUserIdByUsername(String username) {
         return null;
-    }
-
-    public Boolean isAdminByUsername(String username) {
-        User user = ds.find(User.class).field("username").equal(username).get();
-        if (user == null) {
-            return false;
-        } else {
-            return user.getIsAdmin();
-        }
     }
 }

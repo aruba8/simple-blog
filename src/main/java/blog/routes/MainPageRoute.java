@@ -2,8 +2,6 @@ package blog.routes;
 
 import blog.BlogController;
 import blog.dao.PostsDAO;
-import blog.dao.SessionDAO;
-import blog.dao.UserDAO;
 import blog.logic.PostHandler;
 import blog.logic.PostsHandler;
 import blog.models.Post;
@@ -12,7 +10,7 @@ import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mongodb.morphia.Datastore;
+import org.hibernate.Session;
 import spark.Request;
 import spark.Response;
 
@@ -29,15 +27,11 @@ public class MainPageRoute extends BaseRoute{
     Logger logger = LogManager.getLogger(MainPageRoute.class.getName());
 
     private Configuration cfg;
-    private SessionDAO sessionDAO;
     private PostsDAO postsDAO;
-    private UserDAO userDAO;
 
-    public MainPageRoute(final Configuration cfg, final Datastore ds) {
+    public MainPageRoute(final Configuration cfg, final Session session) {
         this.cfg = cfg;
-        this.sessionDAO = new SessionDAO(ds);
-        this.postsDAO = new PostsDAO(ds);
-        this.userDAO = new UserDAO(ds);
+        this.postsDAO = new PostsDAO(session);
     }
 
 
@@ -61,8 +55,6 @@ public class MainPageRoute extends BaseRoute{
                 String permalink = URLDecoder.decode(request.params(":permalink"), "UTF-8");
                 Post postObject = postsDAO.findByPermalink(permalink);
                 String cookie = BlogController.getSessionCookie(request);
-                String username = sessionDAO.findUserNameBySessionId(cookie);
-                Boolean isAdmin = userDAO.isAdminByUsername(username);
                 logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
 
 
@@ -76,9 +68,6 @@ public class MainPageRoute extends BaseRoute{
                     Map post = PostHandler.getPost(postObject);
                     logger.debug(post.get("articleBody"));
 
-                    if (isAdmin) {
-                        root.put("admin", "true");
-                    }
                     root.put("post", post);
                     template.process(root, writer);
                 }

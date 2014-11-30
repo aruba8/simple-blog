@@ -16,7 +16,7 @@
     <ul class="post-info">
         <#if post.tags ??>
             <#list post.tags as tag>
-                <li><a href="/category?c=${tag}">${tag}</a></li>
+                <li><a href="/category?c=${tag["name"]}">${tag["name"]}</a></li>
             </#list>
         </#if>
     </ul>

@@ -11,7 +11,7 @@ import freemarker.template.TemplateException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mongodb.morphia.Datastore;
+import org.hibernate.Session;
 import spark.Request;
 import spark.Response;
 
@@ -31,10 +31,10 @@ public class LoginRoute extends BaseRoute{
 
     Logger logger = LogManager.getLogger(LoginRoute.class.getName());
 
-    public LoginRoute(final Configuration cfg, final Datastore ds){
+    public LoginRoute(final Configuration cfg, final Session session){
         this.cfg = cfg;
-        this.userDAO = new UserDAO(ds);
-        this.sessionDAO = new SessionDAO(ds);
+        this.userDAO = new UserDAO(session);
+        this.sessionDAO = new SessionDAO(session);
         this.configParser = new ConfigParser();
     }
 
@@ -45,7 +45,7 @@ public class LoginRoute extends BaseRoute{
                 logger.info(request.requestMethod()+" "+request.headers("Referer"));
                 SimpleHash root = new SimpleHash();
                 String cookie = BlogController.getSessionCookie(request);
-                String username = sessionDAO.findUserNameBySessionId(cookie);
+                String username = sessionDAO.findUserNameBySessionString(cookie);
                 if (username != null) {
                     root.put("authorized", "true");
                 } else {
@@ -100,7 +100,6 @@ public class LoginRoute extends BaseRoute{
                     response.redirect("/login");
                 } else {
                     sessionDAO.endSession(sessionId);
-
                     Cookie c = getSessionCookieActual(request);
                     c.setMaxAge(0);
                     response.raw().addCookie(c);
@@ -130,7 +129,6 @@ public class LoginRoute extends BaseRoute{
                 String password2 = request.queryParams("password_2");
                 String email = request.queryParams("email");
 
-
                 if (!password1.equals(password2)) {
                     root.put("error", "passwords are not equal");
                     logger.warn("passwords are not equal");
@@ -139,7 +137,7 @@ public class LoginRoute extends BaseRoute{
                     root.put("error", "username must contain at least 3 chars");
                     logger.warn("username must contain at least 3 chars");
                     template.process(root, writer);
-                } else if (!userDAO.addUser(username, password1, email, false)) {
+                } else if (!userDAO.addUser(username, password1, email)) {
                     root.put("error", "username already in use");
                     logger.warn("username already in use");
                     template.process(root, writer);

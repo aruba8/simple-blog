@@ -1,11 +1,8 @@
 package blog;
 
 import blog.routes.*;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 import freemarker.template.Configuration;
-import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Morphia;
+import org.hibernate.Session;
 import spark.Request;
 
 import javax.servlet.http.Cookie;
@@ -27,19 +24,17 @@ public class BlogController {
     }
 
     public BlogController(String mongoURIString, String extStaticFolder) throws IOException {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI(mongoURIString));
-        Datastore ds = new Morphia().createDatastore(mongoClient, "blog");
-
+        Session session = HibernateUtil.getSessionFactory().openSession();
         Configuration cfg = createFreemarkerConfiguration();
         cfg.setDefaultEncoding("UTF-8");
         externalStaticFileLocation(extStaticFolder);
         setPort(8080);
 
-        MainPageRoute mainPageRoute = new MainPageRoute(cfg, ds);
-        AddPostRoute addPostRoute = new AddPostRoute(cfg, ds);
-        LoginRoute loginRoute = new LoginRoute(cfg, ds);
-        CategoriesRoute categoriesRoute = new CategoriesRoute(cfg, ds);
-        EditPostRoute editPostRoute = new EditPostRoute(cfg, ds);
+        MainPageRoute mainPageRoute = new MainPageRoute(cfg, session);
+        AddPostRoute addPostRoute = new AddPostRoute(cfg, session);
+        LoginRoute loginRoute = new LoginRoute(cfg, session);
+        CategoriesRoute categoriesRoute = new CategoriesRoute(cfg, session);
+        EditPostRoute editPostRoute = new EditPostRoute(cfg, session);
 
         mainPageRoute.initMainPage();
         categoriesRoute.initPage();

@@ -1,15 +1,14 @@
 package blog.logic;
 
 import blog.models.Post;
+import blog.models.Tag;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.markdown4j.Markdown4jProcessor;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PostHandler {
     private static Logger logger = LogManager.getLogger(PostHandler.class.getName());
@@ -17,7 +16,7 @@ public class PostHandler {
     public static Map<String, Object> getPost(Post post) {
         Date dateTime = post.getDateTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.YYYY HH:mm");
-        String [] tags = post.getTags();
+        Set<Tag> tags = post.getTags();
         Boolean isCommentsAvailable = true;
         if (post.getIsCommentsAvailable() != null){
             isCommentsAvailable = post.getIsCommentsAvailable();
@@ -51,22 +50,16 @@ public class PostHandler {
         }
     }
 
-    public static Post preparePost(String rawPost){
-        String splitRawPost [] = rawPost.split("~~~~~~~~~~~~~~\n");
+    public static Post createPost(String rawPost){
+        String splitRawPost [] = rawPost.split("~~~~~~~~~~~~~~");
         String head = splitRawPost[0];
         String body = splitRawPost[1];
         String title = "";
-        String categories;
         String isCommentsAvailable = "";
-        String [] categoriesArray = null;
-
         String splitHead [] = head.split("\n|\r\n");
         for (String aSplitHead : splitHead) {
             if (aSplitHead.startsWith("Title:")) {
                 title = aSplitHead.replace("Title:", "").trim();
-            } else if (aSplitHead.startsWith("Categories")) {
-                categories = aSplitHead.replace("Categories:", "").trim().replaceAll("\\s", "");
-                categoriesArray = categories.split(",");
             } else if (aSplitHead.startsWith("Comments:")) {
                 isCommentsAvailable = aSplitHead.replace("Comments:", "").toLowerCase().trim();
             }
@@ -76,9 +69,23 @@ public class PostHandler {
         post.setTitle(title);
         post.setArticleBody(body);
         post.setIsCommentsAvailable(Boolean.parseBoolean(isCommentsAvailable));
-        post.setTags(categoriesArray);
         post.setPermalink(createPermalink(title));
         return post;
+    }
+
+    public static String[] getTags(String rawPost){
+        String splitRawPost [] = rawPost.split("~~~~~~~~~~~~~~");
+        String head = splitRawPost[0];
+        String categories;
+        String splitHead [] = head.split("\n|\r\n");
+        String [] categoriesArray = null;
+        for (String aSplitHead : splitHead) {
+            if (aSplitHead.startsWith("Categories")) {
+                categories = aSplitHead.replace("Categories:", "").trim().replaceAll("\\s", "");
+                categoriesArray = categories.split(",");
+            }
+        }
+        return categoriesArray;
     }
 
     public static String createPermalink(String title){
