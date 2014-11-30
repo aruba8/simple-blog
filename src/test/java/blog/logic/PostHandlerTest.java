@@ -17,8 +17,7 @@ public class PostHandlerTest {
     public void testPreparePost(){
         Post post = PostHandler.createPost(rawPost);
         assertThat(post.getTitle(), equalTo("new title"));
-        assertThat(post.getTags().size(), equalTo(2));
-        assertThat(post.getArticleBody(), equalTo("hello this is content"));
+        assertThat(post.getArticleBody(), equalTo("\nhello this is content"));
         assertThat(post.getPermalink(), equalTo("new-title"));
         assertThat(post.getIsCommentsAvailable(), Is.is(false));
     }
