@@ -16,6 +16,7 @@
 <form method="post" action="/addpost">
     <textarea id="article-body" name="articleBody">
 Title:
+Date:${dateTime}
 Categories:
 Comments:true
 ~~~~~~~~~~~~~~

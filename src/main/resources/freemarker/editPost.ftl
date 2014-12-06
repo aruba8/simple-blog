@@ -16,6 +16,7 @@
 <form method="post" action="/edit?id=${post['id']}">
     <textarea id="article-body" name="articleBody">
 Title: ${post["title"]}
+Date: ${post["dateTime"]}
 Categories: <#if tags ??>${tags}</#if>
 Comments: <#if isCommentsAvailable ??>${isCommentsAvailable}</#if>
 ~~~~~~~~~~~~~~

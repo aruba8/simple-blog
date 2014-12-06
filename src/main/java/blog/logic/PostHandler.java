@@ -7,15 +7,16 @@ import org.apache.logging.log4j.Logger;
 import org.markdown4j.Markdown4jProcessor;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class PostHandler {
     private static Logger logger = LogManager.getLogger(PostHandler.class.getName());
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
 
     public static Map<String, Object> getPost(Post post) {
         Date dateTime = post.getDateTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.YYYY HH:mm");
         Set<Tag> tags = post.getTags();
         Boolean isCommentsAvailable = true;
         if (post.getIsCommentsAvailable() != null){
@@ -25,7 +26,7 @@ public class PostHandler {
         try {
             String htmlArticle = new Markdown4jProcessor().process(post.getArticleBody());
 
-            postMap.put("dateTime", sdf.format(dateTime));
+            postMap.put("dateTime", dateFormat.format(dateTime));
             postMap.put("title", post.getTitle());
             postMap.put("articleBody", htmlArticle);
             postMap.put("permalink", post.getPermalink());
@@ -59,15 +60,23 @@ public class PostHandler {
         String title = "";
         String isCommentsAvailable = "";
         String splitHead [] = head.split("\n|\r\n");
+        String dateString = "";
         for (String aSplitHead : splitHead) {
             if (aSplitHead.startsWith("Title:")) {
                 title = aSplitHead.replace("Title:", "").trim();
+            } else if (aSplitHead.startsWith("Date:")) {
+                dateString = aSplitHead.replace("Date:", "").toLowerCase().trim();
             } else if (aSplitHead.startsWith("Comments:")) {
                 isCommentsAvailable = aSplitHead.replace("Comments:", "").toLowerCase().trim();
             }
         }
         Post post = new Post();
-        post.setDateTime(new Date());
+        try {
+            post.setDateTime(dateFormat.parse(dateString));
+            logger.debug(dateFormat.parse(dateString));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         post.setTitle(title);
         post.setArticleBody(body);
         post.setIsCommentsAvailable(Boolean.parseBoolean(isCommentsAvailable));

@@ -41,7 +41,6 @@ public class PostsDAO {
         hibernateSession.getTransaction().begin();
         Post post = (Post) hibernateSession.createCriteria(Post.class).add(Restrictions.eq("permalink", permalink)).uniqueResult();
         hibernateSession.getTransaction().commit();
-        logger.debug(post.getTagNames().length);
         return post;
     }
 
@@ -49,15 +48,12 @@ public class PostsDAO {
     public String updatePost(String id, Post post) {
         hibernateSession.getTransaction().begin();
         Post updPost = (Post) hibernateSession.get(Post.class, Long.parseLong(id));
-
         updPost.setArticleBody(post.getArticleBody());
         updPost.setTitle(post.getTitle());
         updPost.setDateTime(post.getDateTime());
         updPost.setIsCommentsAvailable(post.getIsCommentsAvailable());
         updPost.setTags(post.getTags());
-        logger.debug("tags:"+post.getTagNames().length);
         updPost.setPermalink(post.getPermalink());
-
         hibernateSession.update(updPost);
         hibernateSession.getTransaction().commit();
         return updPost.getPermalink();

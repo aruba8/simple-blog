@@ -22,7 +22,7 @@ public class Post {
     @Column(name = "permalink")
     private String permalink;
     @ManyToMany(
-            fetch = FetchType.EAGER,
+            fetch = FetchType.LAZY,
             cascade = CascadeType.REFRESH
     )
     @JoinTable(

@@ -19,6 +19,8 @@ import spark.Response;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
 
 import static spark.Spark.get;
@@ -47,12 +49,13 @@ public class AddPostRoute extends BaseRoute{
                 String cookie = BlogController.getSessionCookie(request);
                 String username = sessionDAO.findUserNameBySessionString(cookie);
                 logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
-
                 if (username == null) {
                     response.redirect("/login");
                 } else {
                     SimpleHash root = new SimpleHash();
                     root.put("blogName", blogName);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+                    root.put("dateTime", simpleDateFormat.format(new Date()));
                     template.process(root, writer);
                 }
 

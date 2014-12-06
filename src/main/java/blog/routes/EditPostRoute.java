@@ -19,6 +19,7 @@ import spark.Response;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +34,8 @@ public class EditPostRoute extends BaseRoute {
     private PostsDAO postsDAO;
     private TagsDAO tagsDAO;
     Logger logger = LogManager.getLogger(MainPageRoute.class.getName());
+    private static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+
 
 
     public EditPostRoute(final Configuration cfg, final Session session){
@@ -76,6 +79,7 @@ public class EditPostRoute extends BaseRoute {
                     postMap.put("id", post.getId());
                     postMap.put("title", post.getTitle());
                     postMap.put("articleBody", post.getArticleBody());
+                    postMap.put("dateTime", dateFormat.format(post.getDateTime()));
                     root.put("post", postMap);
                     template.process(root, writer);
                 }
@@ -91,7 +95,6 @@ public class EditPostRoute extends BaseRoute {
                 try {
                     String id = request.queryParams("id");
                     logger.info(id);
-                    //todo post doesn't work
                     Post post = PostHandler.createPost(articleBody);
                     String[] tagsArray = PostHandler.getTags(articleBody);
                     Set<Tag> tags = tagsDAO.createTags(tagsArray);
