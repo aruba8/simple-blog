@@ -31,6 +31,8 @@ public class PostHandler {
             postMap.put("permalink", post.getPermalink());
             postMap.put("articlePreview", createArticlePreview(post.getArticleBody()));
             postMap.put("isCommentsAvailable", isCommentsAvailable);
+            postMap.put("author_id", post.getAuthor().getId());
+            postMap.put("author_name", post.getAuthor().getUsername());
             if(tags != null){
                 postMap.put("tags", tags);
             }

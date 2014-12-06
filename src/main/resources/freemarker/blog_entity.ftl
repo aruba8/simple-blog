@@ -12,8 +12,12 @@
 <div id="header"><h1><a href="/">${blogName}</a></h1></div>
 
 <div id="content">
-
-<div class="date">${post["dateTime"]}<#if admin ??><a class="edit" href="/edit/${post["permalink"]}"> edit</a></#if></div>
+<div class="date">${post["dateTime"]}
+    <#if currentUser??>
+        <#if currentUser["id"] == post["author_id"] >
+            <a class="edit" href="/edit/${post["permalink"]}"> edit</a>
+        </#if></div>
+    </#if>
 
 <div class="title">${post["title"]}</div>
     <ul class="post-info">
@@ -26,7 +30,7 @@
 
     <div class="article">
     <article>
-    ${post["articleBody"]}
+    ${post["articleBody"]?trim}
     </article>
 </div>
 <#if post.isCommentsAvailable>

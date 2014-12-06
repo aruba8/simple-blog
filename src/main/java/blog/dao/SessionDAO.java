@@ -65,16 +65,13 @@ public class SessionDAO {
 
     // ends the session by deleting it from the sesisons table
     public void endSession(String sessionString) {
-//        sessionsCollection.remove(new BasicDBObject("_id", sessionID));
         hibernateSession.getTransaction().begin();
-        Session session = (Session) hibernateSession.createCriteria(Session.class).add(Restrictions.eq("sessionString", sessionString)).uniqueResult();
-        hibernateSession.delete(session);
+        hibernateSession.delete(getSession(sessionString));
         hibernateSession.getTransaction().commit();
     }
 
     // retrieves the session from the sessions table
     public Session getSession(String sessionString) {
-//        return sessionsCollection.findOne(new BasicDBObject("_id", sessionID));
         return (Session) hibernateSession.createCriteria(Session.class).add(Restrictions.eq("sessionString", sessionString)).uniqueResult();
     }
 

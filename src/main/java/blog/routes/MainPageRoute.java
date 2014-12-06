@@ -2,9 +2,11 @@ package blog.routes;
 
 import blog.BlogController;
 import blog.dao.PostsDAO;
+import blog.dao.SessionDAO;
 import blog.logic.PostHandler;
 import blog.logic.PostsHandler;
 import blog.models.Post;
+import blog.models.User;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
@@ -28,10 +30,12 @@ public class MainPageRoute extends BaseRoute{
 
     private Configuration cfg;
     private PostsDAO postsDAO;
+    private SessionDAO sessionDAO;
 
     public MainPageRoute(final Configuration cfg, final Session session) {
         this.cfg = cfg;
         this.postsDAO = new PostsDAO(session);
+        this.sessionDAO = new SessionDAO(session);
     }
 
 
@@ -41,7 +45,6 @@ public class MainPageRoute extends BaseRoute{
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
                 List<Post> posts = postsDAO.findPostsByDescending(10);
-                logger.info(PostsHandler.getPostsList(postsDAO.findPostsByDescending(10)));
                 SimpleHash root = new SimpleHash();
                 root.put("blogName", blogName);
                 root.put("posts", PostsHandler.getPostsList(posts));
@@ -56,18 +59,16 @@ public class MainPageRoute extends BaseRoute{
                 Post postObject = postsDAO.findByPermalink(permalink);
                 String cookie = BlogController.getSessionCookie(request);
                 logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
-
-
+                User user = sessionDAO.getUserBySessionString(cookie);
                 if (postObject == null) {
                     response.redirect("/post_not_found");
                 } else {
                     SimpleHash root = new SimpleHash();
+                    root.put("currentUser", user);
                     root.put("diqusShortName", configParser.getDisqusShortName());
                     root.put("blogName", blogName);
 
                     Map post = PostHandler.getPost(postObject);
-                    logger.debug(post.get("articleBody"));
-
                     root.put("post", post);
                     template.process(root, writer);
                 }

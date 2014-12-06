@@ -13,13 +13,13 @@
 <body>
 
 <!-- Place this in the body of the page content -->
-<form method="post" action="/edit?id=${post['_id']}">
+<form method="post" action="/edit?id=${post['id']}">
     <textarea id="article-body" name="articleBody">
 Title: ${post["title"]}
 Categories: <#if tags ??>${tags}</#if>
 Comments: <#if isCommentsAvailable ??>${isCommentsAvailable}</#if>
 ~~~~~~~~~~~~~~
-${post["articleBody"]}</textarea>
+${post["articleBody"]?trim}</textarea>
     <input type="submit" name="submit" value="submit" />
 </form>
 

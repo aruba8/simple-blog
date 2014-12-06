@@ -17,18 +17,19 @@ public class Post {
     private User author;
     @Column(name = "title")
     private String title;
-    @Column(name = "articleBody")
+    @Column(name = "articleBody", length = 5000)
     private String articleBody;
     @Column(name = "permalink")
     private String permalink;
     @ManyToMany(
-            fetch = FetchType.LAZY,
+            fetch = FetchType.EAGER,
             cascade = CascadeType.REFRESH
     )
     @JoinTable(
             name = "post_tag",
             joinColumns={@JoinColumn(name = "post_id")},
-            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
+            inverseJoinColumns = {@JoinColumn(name = "tag_id")}
+    )
     private Set<Tag> tags = new HashSet<Tag>();
     @Column(name = "isCommentsAvailable")
     private Boolean isCommentsAvailable;

@@ -3,8 +3,10 @@ package blog.routes;
 import blog.BlogController;
 import blog.dao.PostsDAO;
 import blog.dao.SessionDAO;
+import blog.dao.TagsDAO;
 import blog.logic.PostHandler;
 import blog.models.Post;
+import blog.models.Tag;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
@@ -19,6 +21,7 @@ import java.io.Writer;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import static spark.Spark.get;
 import static spark.Spark.post;
@@ -28,6 +31,7 @@ public class EditPostRoute extends BaseRoute {
     private Configuration cfg;
     private SessionDAO sessionDAO;
     private PostsDAO postsDAO;
+    private TagsDAO tagsDAO;
     Logger logger = LogManager.getLogger(MainPageRoute.class.getName());
 
 
@@ -35,6 +39,7 @@ public class EditPostRoute extends BaseRoute {
         this.cfg = cfg;
         this.sessionDAO = new SessionDAO(session);
         this.postsDAO = new PostsDAO(session);
+        this.tagsDAO = new TagsDAO(session);
     }
 
     public void initPage() throws IOException {
@@ -57,9 +62,9 @@ public class EditPostRoute extends BaseRoute {
                     if (post.getIsCommentsAvailable() != null){
                         isCommentsAvailable = post.getIsCommentsAvailable();
                     }
-                    if(tags != null){
+                    if(tags != null && tags.length > 0){
                         String tagsStringRaw = "";
-                        for(Object tag : tags){
+                        for(String tag : tags){
                             tagsStringRaw = tagsStringRaw+tag+", ";
                         }
                         String tagsString = tagsStringRaw.substring(0, tagsStringRaw.length()-2);
@@ -67,8 +72,8 @@ public class EditPostRoute extends BaseRoute {
                         root.put("tags", tagsString);
                     }
                     root.put("isCommentsAvailable", isCommentsAvailable.toString());
-                    Map<String, String> postMap = new HashMap<String, String>();
-                    postMap.put("_id", post.getId().toString());
+                    Map<String, Object> postMap = new HashMap<String, Object>();
+                    postMap.put("id", post.getId());
                     postMap.put("title", post.getTitle());
                     postMap.put("articleBody", post.getArticleBody());
                     root.put("post", postMap);
@@ -87,7 +92,12 @@ public class EditPostRoute extends BaseRoute {
                     String id = request.queryParams("id");
                     logger.info(id);
                     //todo post doesn't work
-                    String postPermalink = postsDAO.updatePost(id, PostHandler.createPost(articleBody));
+                    Post post = PostHandler.createPost(articleBody);
+                    String[] tagsArray = PostHandler.getTags(articleBody);
+                    Set<Tag> tags = tagsDAO.createTags(tagsArray);
+                    post.setTags(tags);
+
+                    String postPermalink = postsDAO.updatePost(id, post);
                     logger.info(postPermalink);
                     response.redirect("/post/"+postPermalink);
                 } catch (Exception e) {
