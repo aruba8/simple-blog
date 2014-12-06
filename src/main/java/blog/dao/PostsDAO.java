@@ -44,6 +44,13 @@ public class PostsDAO {
         return post;
     }
 
+    public Post findPostById(Long id){
+        hibernateSession.getTransaction().begin();
+        Post post = (Post) hibernateSession.get(Post.class, id);
+        hibernateSession.getTransaction().commit();
+        return post;
+    }
+
 
     public String updatePost(String id, Post post) {
         hibernateSession.getTransaction().begin();

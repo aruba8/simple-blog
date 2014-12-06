@@ -100,7 +100,7 @@ p div {
     color: red;
 }
 
-textarea {
+textarea#article-body {
     font-family: 'Anonymous Pro';
     width: 100%;
     margin: 0 auto;

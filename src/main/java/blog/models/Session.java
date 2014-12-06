@@ -4,7 +4,7 @@ package blog.models;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "sessions")
+@Table(name = "session")
 public class Session {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

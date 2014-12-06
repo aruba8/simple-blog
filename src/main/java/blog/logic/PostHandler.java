@@ -25,7 +25,7 @@ public class PostHandler {
         Map<String, Object> postMap = new HashMap<String, Object>();
         try {
             String htmlArticle = new Markdown4jProcessor().process(post.getArticleBody());
-
+            postMap.put("post_id", post.getId());
             postMap.put("dateTime", dateFormat.format(dateTime));
             postMap.put("title", post.getTitle());
             postMap.put("articleBody", htmlArticle);

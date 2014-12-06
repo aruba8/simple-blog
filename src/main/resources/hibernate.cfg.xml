@@ -22,6 +22,7 @@
         <mapping class="blog.models.Post" />
         <mapping class="blog.models.Tag" />
         <mapping class="blog.models.Session" />
+        <mapping class="blog.models.Comment" />
     </session-factory>
 
 

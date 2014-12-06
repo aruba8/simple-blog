@@ -1,10 +1,13 @@
 package blog.routes;
 
 import blog.BlogController;
+import blog.dao.CommentDAO;
 import blog.dao.PostsDAO;
 import blog.dao.SessionDAO;
+import blog.logic.CommentHandler;
 import blog.logic.PostHandler;
 import blog.logic.PostsHandler;
+import blog.models.Comment;
 import blog.models.Post;
 import blog.models.User;
 import freemarker.template.Configuration;
@@ -31,11 +34,13 @@ public class MainPageRoute extends BaseRoute{
     private Configuration cfg;
     private PostsDAO postsDAO;
     private SessionDAO sessionDAO;
+    private CommentDAO commentDAO;
 
     public MainPageRoute(final Configuration cfg, final Session session) {
         this.cfg = cfg;
         this.postsDAO = new PostsDAO(session);
         this.sessionDAO = new SessionDAO(session);
+        this.commentDAO = new CommentDAO(session);
     }
 
 
@@ -67,8 +72,9 @@ public class MainPageRoute extends BaseRoute{
                     root.put("currentUser", user);
                     root.put("diqusShortName", configParser.getDisqusShortName());
                     root.put("blogName", blogName);
-
+                    List<Comment> commentList = commentDAO.getCommentsByPostId(postObject.getId());
                     Map post = PostHandler.getPost(postObject);
+                    root.put("comments", CommentHandler.getComments(commentList));
                     root.put("post", post);
                     template.process(root, writer);
                 }

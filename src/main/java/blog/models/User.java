@@ -20,6 +20,12 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "author"
+    )
+    private Set<Comment> comments;
+
     public User(String username, String password, String email){
         this.username = username;
         this.email = email;
@@ -30,10 +36,6 @@ public class User {
 
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getPassword() {
@@ -67,5 +69,13 @@ public class User {
     @Override
     public String toString(){
         return "User model. username = "+username;
+    }
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
     }
 }

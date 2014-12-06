@@ -35,13 +35,14 @@ public class BlogController {
         LoginRoute loginRoute = new LoginRoute(cfg, session);
         CategoriesRoute categoriesRoute = new CategoriesRoute(cfg, session);
         EditPostRoute editPostRoute = new EditPostRoute(cfg, session);
+        AddCommentRoute addCommentRoute = new AddCommentRoute(cfg, session);
 
         mainPageRoute.initMainPage();
         categoriesRoute.initPage();
         addPostRoute.initPage();
         loginRoute.initPage();
         editPostRoute.initPage();
-
+        addCommentRoute.initRoute();
     }
 
     private Configuration createFreemarkerConfiguration(){
