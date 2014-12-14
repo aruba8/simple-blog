@@ -2,6 +2,7 @@ package blog.dao;
 
 import blog.models.Post;
 import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,14 +12,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class PostsDAOTest {
-
-
     PostsDAO postsDAOmock = mock(PostsDAO.class);
+    Post post;
+    Post post2;
 
     @Before
     public void setUp(){
-        Post post2 = new Post();
-        Post post = new Post();
+        post2 = new Post();
+        post = new Post();
         post.setTitle("AAAAAAA");
         post2.setTitle("EEEAAAAAAA");
         post.setIsCommentsAvailable(true);
@@ -32,8 +33,12 @@ public class PostsDAOTest {
         List<Post> postList = new ArrayList<Post>();
         postList.add(post);
         postList.add(post2);
-
         when(postsDAOmock.findPostsByDescending(10)).thenReturn(postList);
+    }
+
+    @Test
+    public void test(){
+
     }
 
 }

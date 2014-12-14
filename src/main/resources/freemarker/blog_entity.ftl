@@ -33,18 +33,19 @@
     ${post["articleBody"]?trim}
     </article>
 </div>
-    <div class="comments">
-        <#list comments as comment>
-            <div class="comment">
-                ${comment["author"]}:
-                ${comment["date"]}:
-                ${comment["text"]}
-            </div>
-        </#list>
+    <#if post.isCommentsAvailable>
+        <div class="comments">
+            <#list comments as comment>
+                <div class="comment">
+                    ${comment["author"]}:
+                    ${comment["date"]}:
+                    ${comment["text"]}
+                </div>
+            </#list>
 
-        <#include "comment_form.ftl">
-    </div>
-
+            <#include "comment_form.ftl">
+        </div>
+    </#if>
     <script>hljs.initHighlightingOnLoad();</script>
 </div>
     <div class="copyright">by <a href="https://github.com/biomaks/simple-java.blog">Simple Blog</a> 2013</div>

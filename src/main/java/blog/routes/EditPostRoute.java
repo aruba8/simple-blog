@@ -7,6 +7,7 @@ import blog.dao.TagsDAO;
 import blog.logic.PostHandler;
 import blog.models.Post;
 import blog.models.Tag;
+import blog.models.User;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateException;
@@ -54,6 +55,10 @@ public class EditPostRoute extends BaseRoute {
 
                 String cookie = BlogController.getSessionCookie(request);
                 String username = sessionDAO.findUserNameBySessionString(cookie);
+                User user = sessionDAO.getUserBySessionString(cookie);
+                if(post.getAuthor().getId() != user.getId()){
+                    response.redirect("/page_not_found");
+                }
                 if (username == null){
                     response.redirect("/login");
                 } else if (post == null){
@@ -91,10 +96,15 @@ public class EditPostRoute extends BaseRoute {
             protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
                 logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
                 String articleBody = request.queryParams("articleBody");
+                String cookie = BlogController.getSessionCookie(request);
+                User user = sessionDAO.getUserBySessionString(cookie);
+                String id = request.queryParams("id");
+                Post postToUpdate = postsDAO.findPostById(Long.parseLong(id));
+                if (user.getId() != postToUpdate.getAuthor().getId()){
+                    response.redirect("/page_not_found");
+                }
                 logger.info(articleBody);
                 try {
-                    String id = request.queryParams("id");
-                    logger.info(id);
                     Post post = PostHandler.createPost(articleBody);
                     String[] tagsArray = PostHandler.getTags(articleBody);
                     Set<Tag> tags = tagsDAO.createTags(tagsArray);
