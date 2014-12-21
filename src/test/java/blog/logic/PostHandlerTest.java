@@ -10,6 +10,7 @@ import static org.junit.Assert.assertThat;
 public class PostHandlerTest {
     private String rawPost = "Title: new title\n" +
             "Categories:category, second_cat\n" +
+            "Date: 20.12.2014 19:27\n" +
             "Comments:false\n" +
             "~~~~~~~~~~~~~~\n" +
             "hello this is content";

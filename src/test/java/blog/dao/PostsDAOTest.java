@@ -33,7 +33,7 @@ public class PostsDAOTest {
         List<Post> postList = new ArrayList<Post>();
         postList.add(post);
         postList.add(post2);
-        when(postsDAOmock.findPostsByDescending(10)).thenReturn(postList);
+        when(postsDAOmock.findPostsByDescending(10, 0)).thenReturn(postList);
     }
 
     @Test
