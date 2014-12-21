@@ -5,47 +5,40 @@ import blog.logic.PostsHandler;
 import blog.models.Post;
 import freemarker.template.Configuration;
 import freemarker.template.SimpleHash;
-import freemarker.template.TemplateException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Session;
-import spark.Request;
-import spark.Response;
+import spark.ModelAndView;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
 import static spark.Spark.get;
 
-public class CategoriesRoute extends BaseRoute{
+public class CategoriesRoute extends BaseRoute {
     Logger logger = LogManager.getLogger(CategoriesRoute.class.getName());
     private Configuration cfg;
     private PostsDAO postsDAO;
 
-    public CategoriesRoute(final Configuration cfg, final Session session){
+    public CategoriesRoute(final Configuration cfg, final Session session) {
         this.cfg = cfg;
         this.postsDAO = new PostsDAO(session);
     }
 
-    public void initPage()throws IOException{
-        get(new FreemarkerBasedRoute("/category", "category.ftl", cfg) {
-            @Override
-            protected void doHandle(Request request, Response response, Writer writer) throws IOException, TemplateException {
-                logger.info(request.requestMethod().toUpperCase()+" "+request.headers("Host")+" "+request.headers("User-Agent"));
-                String tag = request.queryParams("c");
+    public void initPage() throws IOException {
+        get("/category", (request, response) -> {
+            logger.info(request.requestMethod().toUpperCase() + " " + request.headers("Host") + " " + request.headers("User-Agent"));
+            String tag = request.queryParams("c");
 
-                List<Post> postsCursor = postsDAO.findPostsByTagDesc(tag, 10);
-                List<Map> posts = PostsHandler.getPostsList(postsCursor);
-                SimpleHash root = new SimpleHash();
+            List<Post> postsCursor = postsDAO.findPostsByTagDesc(tag, 10);
+            List<Map> posts = PostsHandler.getPostsList(postsCursor);
+            SimpleHash root = new SimpleHash();
 
-                root.put("blogName", blogName);
-                root.put("posts", posts);
-                root.put("category", tag);
-                template.process(root, writer);
-            }
-        });
+            root.put("blogName", blogName);
+            root.put("posts", posts);
+            root.put("category", tag);
+            return new ModelAndView(root, "category.ftl");
+        }, new FreemarkerTemplateEngine(cfg));
     }
-
 }

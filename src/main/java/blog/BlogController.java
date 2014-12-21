@@ -9,26 +9,22 @@ import javax.servlet.http.Cookie;
 import java.io.IOException;
 
 import static spark.Spark.externalStaticFileLocation;
-import static spark.Spark.setPort;
+import static spark.SparkBase.port;
 
 
 public class BlogController {
 
     public static void main(String[] args) throws IOException {
         String extStaticFolder = System.getenv("BLOG_DIR");
-        if (args.length == 0) {
-            new BlogController("mongodb://localhost", extStaticFolder);
-        } else {
-            new BlogController(args[0], extStaticFolder);
-        }
+        new BlogController(extStaticFolder);
     }
 
-    public BlogController(String mongoURIString, String extStaticFolder) throws IOException {
+    public BlogController(String extStaticFolder) throws IOException {
         Session session = HibernateUtil.getSessionFactory().openSession();
         Configuration cfg = createFreemarkerConfiguration();
         cfg.setDefaultEncoding("UTF-8");
         externalStaticFileLocation(extStaticFolder);
-        setPort(8080);
+        port(8080);
 
         MainPageRoute mainPageRoute = new MainPageRoute(cfg, session);
         AddPostRoute addPostRoute = new AddPostRoute(cfg, session);
@@ -45,7 +41,7 @@ public class BlogController {
         addCommentRoute.initRoute();
     }
 
-    private Configuration createFreemarkerConfiguration(){
+    private Configuration createFreemarkerConfiguration() {
         Configuration retVal = new Configuration();
         retVal.setClassForTemplateLoading(BlogController.class, "/freemarker");
         return retVal;

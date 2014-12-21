@@ -82,7 +82,7 @@ public class Post {
         this.isCommentsAvailable = isCommentsAvailable;
     }
 
-    public void setTags(Set tags) {
+    public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
 

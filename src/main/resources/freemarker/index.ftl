@@ -23,7 +23,17 @@
         <li class="more"><a href="/post/${post["permalink"]}">Read ...</a></li>
     </ul>
 </#list>
-
+<div class="older">
+    <a href="/?page=${pageNumber+1}"><- Older</a>
+    <#if pageNumber == 1 >
+        <#--<a href="/"> Newer -></a>-->
+    <#elseif pageNumber lt 1>
+    <#elseif pageNumber == 2>
+        <a href="/">Newer -></a>
+    <#else>
+        <a href="/?page=${pageNumber-1}">Newer -></a>
+    </#if>
+</div>
 </div>
 <script>hljs.initHighlightingOnLoad();</script>
 

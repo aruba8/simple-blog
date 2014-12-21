@@ -148,3 +148,7 @@ ul.post-info {
 a.edit {
     color: red;
 }
+
+.comment {
+    margin: 4px;
+}

@@ -14,17 +14,16 @@ public class PostsDAO {
     public PostsDAO(Session session){this.hibernateSession = session;}
     Logger logger = LogManager.getLogger(PostsDAO.class.getName());
 
-
-
-    public void insertPost(Post post){
+    public Long insertPost(Post post){
         hibernateSession.getTransaction().begin();
-        hibernateSession.save(post);
+        Long post_id = (Long) hibernateSession.save(post);
         hibernateSession.getTransaction().commit();
+        return post_id;
     }
 
-    public List<Post> findPostsByDescending(int limit){
+    public List<Post> findPostsByDescending(int limit, int firstResults){
         hibernateSession.getTransaction().begin();
-        List<Post> postList = hibernateSession.createCriteria(Post.class).addOrder(Order.desc("dateTime")).setMaxResults(limit).list();
+        List<Post> postList = hibernateSession.createCriteria(Post.class).addOrder(Order.desc("dateTime")).setFirstResult(firstResults).setMaxResults(limit).list();
         hibernateSession.getTransaction().commit();
         return postList;
     }
@@ -51,7 +50,6 @@ public class PostsDAO {
         return post;
     }
 
-
     public String updatePost(String id, Post post) {
         hibernateSession.getTransaction().begin();
         Post updPost = (Post) hibernateSession.get(Post.class, Long.parseLong(id));
@@ -65,8 +63,6 @@ public class PostsDAO {
         hibernateSession.getTransaction().commit();
         return updPost.getPermalink();
     }
-
-
 }
 
 
