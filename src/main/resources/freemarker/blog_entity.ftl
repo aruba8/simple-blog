@@ -36,18 +36,24 @@
     <#if post.isCommentsAvailable>
         <div class="comments">
             <#list comments as comment>
-                <div class="comment">
-                    ${comment["author"]}:
-                    ${comment["date"]}:
-                    ${comment["text"]}
-                </div>
+                <div class="comment">${comment["author"]?trim}:${comment["date"]?trim}:${comment["text"]?trim}</div>
             </#list>
+            <#macro comment_form post_id>
 
-            <#include "comment_form.ftl">
+                <form method="post" action="/addcomment">
+                    <input name="post_id" type="hidden" value="${post_id}">
+                    <textarea name="commentBody"></textarea>
+                    <input type="submit" value="Send">
+                </form>
+            </#macro>
+
+            <@comment_form post_id=post.post_id/>
         </div>
     </#if>
     <script>hljs.initHighlightingOnLoad();</script>
 </div>
     <div class="copyright">by <a href="https://github.com/biomaks/simple-java.blog">Simple Blog</a> 2013</div>
 </body>
+
+
 </html>
